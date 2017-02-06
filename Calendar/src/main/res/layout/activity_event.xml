@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/activity_event"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
+        tools:context="masha.calendar.EventActivity">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Название события"
+            android:ems="10"
+            android:id="@+id/eventName"
+            android:textSize="24sp"
+            android:maxLines="2"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/eventText"
+            android:hint="Описание события"
+            android:lines="2"
+            android:maxLength="3000"
+            android:maxLines="5"/>
+
+        <TextView
+            android:text="Дата"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dayView"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:textAlignment="center" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dayPicker"
+                android:layout_weight="1"
+                />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/monthPicker"
+                android:layout_weight="1" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/yearPicker"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+
+        <CheckBox
+            android:text="Весь день"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/allDay"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:textAlignment="textStart"
+            android:padding="10dp"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:text="Время"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeView"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:textSize="24sp"
+            android:textColor="@android:color/black"
+            android:textAlignment="center"
+            android:visibility="visible"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/timeLayout"
+            android:visibility="visible">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/hourPicker"
+                android:layout_weight="1" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/minutePicker"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/recurText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recurView"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:textSize="24sp"
+            android:textColor="@android:color/black" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:entries="@array/recurList"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/recurLayout"
+            android:visibility="gone">
+
+            <TextView
+                android:text="Повторять каждые"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/repeatView1"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"/>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/recurDayPicker"
+                android:layout_weight="1" />
+
+            <TextView
+                android:text="дней (дня)"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView3"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:text="Назначить тэг"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tagTitle"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textColor="@android:color/black" />
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tagView"
+            android:inputType="textPersonName"
+            android:hint="Тэг"
+            android:ems="10"
+            android:textSize="24sp"
+            android:maxLines="2"
+            android:textAlignment="center" />
+
+        <Button
+            android:text="Сохранить"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/saveBtn"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_margin="10dp" />
+
+        <Button
+            android:text="Считать из БД"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/readBtn" />
+
+        <Button
+            android:text="Очистить"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/clearBtn" />
+
+    </LinearLayout>
+</ScrollView>
+

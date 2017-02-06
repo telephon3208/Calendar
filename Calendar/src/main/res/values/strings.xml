@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Календарь</string>
+    <string name="SetDate">Изменить дату</string>
+    <string name="SetTime">Изменить время</string>
+    <string name="Settings">Настройки</string>
+    <string name="CreateEvent">Создать событие</string>
+    <string name="Title">Создание события</string>
+    <string name="SpecifyDate">Укажите дату события</string>
+    <string name="recurText">Повторение события</string>
+    <string name="filter">Фильтр</string>
+    <string-array name="recurList">
+        <item>не повторять</item>
+        <item>каждый год</item>
+        <item>каждый месяц</item>
+        <item>каждую неделю</item>
+        <item>каждые несколько дней</item>
+    </string-array>
+
+</resources>
