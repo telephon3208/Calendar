@@ -1,8 +1,12 @@
 package masha.calendar;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,9 +25,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
 import masha.calendar.Filter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,6 +46,9 @@ public class MonthActivity extends AppCompatActivity {
     Handler h;
 
     TextView monthView, timeView, textView;
+    AlertDialog.Builder ad;
+    Context context;
+    ListView listView1;
     TableRow week1, week2, week3, week4, week5, week6;
 
     Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14;
@@ -73,6 +83,7 @@ public class MonthActivity extends AppCompatActivity {
         //region findViewById
         monthView = (TextView) findViewById(R.id.monthView);
         timeView = (TextView) findViewById(R.id.timeView);
+        listView1 = (ListView) findViewById(R.id.listView1);
 //        textView = (TextView) findViewById(R.id.textView);
 
         week1 = (TableRow) findViewById(R.id.week1);
@@ -468,7 +479,7 @@ public class MonthActivity extends AppCompatActivity {
 
                 return true;
             case R.id.filter:
-
+                showDialog(0);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -674,7 +685,6 @@ public class MonthActivity extends AppCompatActivity {
 
         }
     };
-    //endregion
 
     View.OnClickListener testButtonsListener = new View.OnClickListener() {
         @Override
@@ -757,61 +767,57 @@ public class MonthActivity extends AppCompatActivity {
 
                     break;
             }}};
+    //endregion
 
 
 
+    protected Dialog onCreateDialog(int id) {
+        final boolean[] mCheckedItems = { false, true, false };
+        final String[] checkCatsName = { "Васька", "Рыжик", "Мурзик" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите котов")
+                .setCancelable(false)
 
-    // фильтрация и выделение событий
-  /*  void eventsFilter() {
-        Log.d(TAG, "начало eventsFilter");
-        try {
-            database = dbHelper.getWritableDatabase();
+                .setMultiChoiceItems(checkCatsName, mCheckedItems,
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which, boolean isChecked) {
+                                mCheckedItems[which] = isChecked;
+                            }
+                        })
+
+                // Добавляем кнопки
+                .setPositiveButton("Готово",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                StringBuilder state = new StringBuilder();
+                                for (int i = 0; i < checkCatsName.length; i++) {
+                                    state.append("" + checkCatsName[i]);
+                                    if (mCheckedItems[i])
+                                        state.append(" выбран\n");
+                                    else
+                                        state.append(" не выбран\n");
+                                }
+                                Toast.makeText(getApplicationContext(),
+                                        state.toString(), Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        })
+
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                dialog.cancel();
+                            }
+                        });
+        return builder.create();
+
         }
-        catch (SQLiteException ex){
-            database = dbHelper.getReadableDatabase();
-        } catch (Exception e) {
-            Log.d(TAG, "Ошибка чтения базы данных");
-        }
-        Log.d(TAG, "получена копия базы данных");
-
-        Cursor cursor = database.query(
-                DBHelper.TABLE_EVENTS,
-                null,
-                "month = ?",
-                new String [] {String.format("%s", displayMonth.get(Calendar.MONTH))},
-                null,
-                null,
-                null);
-
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
-            int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
-            int descriptionIndex = cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION);
-            int dateIndex = cursor.getColumnIndex(DBHelper.KEY_DATE);
-            int monthIndex = cursor.getColumnIndex(DBHelper.KEY_MONTH);
-            int yearIndex = cursor.getColumnIndex(DBHelper.KEY_YEAR);
-            int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
-            int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
-            int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
-            do {
-                Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
-                        ", title = " + cursor.getString(titleIndex) +
-                        ", description = " + cursor.getString(descriptionIndex) +
-                        ", date = " + cursor.getString(dateIndex) +
-                        ", month = " + cursor.getString(monthIndex) +
-                        ", year = " + cursor.getString(yearIndex) +
-                        ", recur_type = " + cursor.getString(recurTypeIndex) +
-                        ", recur_days = " + cursor.getString(recurDaysIndex) +
-                        ", tag = " + cursor.getString(tagIndex));
-                Button b = btnSearch(cursor.getInt(dateIndex));
-                b.setBackgroundResource(android.R.color.holo_blue_light);  //выделяем праздник
-            } while (cursor.moveToNext());
-        } else
-            Log.d(TAG,"0 rows");
-        Log.d(TAG, "вывод отфильтрованных данных в лог");
-        cursor.close();
-        dbHelper.close();
-    }*/
 
 
 
