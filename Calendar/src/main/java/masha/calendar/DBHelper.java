@@ -84,8 +84,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 ")");
         Log.d(MonthActivity.TAG, "создана таблица MONTH_EVENTS");
 
-        MonthActivity.tags.add("Государственные праздники");
-        addBaseEvents(db, MonthActivity.tags.get(0));
+   //     MonthActivity.tags.add("Государственные праздники");
+        addBaseEvents(db);
 
         //тестовый блок событий
         ContentValues contentValues = new ContentValues();
@@ -127,7 +127,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addBaseEvents(SQLiteDatabase db, String tag) {
+    void addBaseEvents(SQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
         String title[] = {
                 "День защитника Отечества",
@@ -143,13 +143,13 @@ public class DBHelper extends SQLiteOpenHelper {
         int recur_type[] = { 1, 1, 1, 1, 1, 1, 1 };
         int all_day[] = { 1, 1, 1, 1, 1, 1, 1 };
         String tags[] = {
-                tag,
-                tag,
-                tag,
-                tag,
-                tag,
-                tag,
-                tag};
+                "Государственные праздники",
+                "Государственные праздники",
+                "Государственные праздники",
+                "Государственные праздники",
+                "Государственные праздники",
+                "Государственные праздники",
+                "Государственные праздники"};
 
         // заполним таблицу
         for (int i = 0; i < 7; i++) {
@@ -167,16 +167,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     void checkBoxWriter(SQLiteDatabase db, String[] s, boolean[] b) {
         Log.d(MonthActivity.TAG, "начало метода checkBoxWriter()");
-        ContentValues contentValues = new ContentValues();
-        Cursor cursor = db.query(DBHelper.TABLE_EVENTS, //инициализирую курсор
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
 
-        //записываем checked в таблицу Events
+        ContentValues contentValues0 = new ContentValues();
+        ContentValues contentValues1 = new ContentValues();
+        contentValues0.put(KEY_CHECKED, 0);
+        contentValues1.put(KEY_CHECKED, 1);
+
+        //прогоняем каждый тэг s[i] через цикл for
         for (int i = 0; i < s.length; i++) {
             Log.d(MonthActivity.TAG, "String[] имеет " + s.length + " членов");
             Log.d(MonthActivity.TAG, "s[0] = " + s[0]);
@@ -184,68 +181,27 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.d(MonthActivity.TAG, "boolean[] имеет " + b.length + " членов");
             Log.d(MonthActivity.TAG, "b[0] = " + b[0]);
             Log.d(MonthActivity.TAG, "b[1] = " + b[1]);
-            cursor = db.query(
-                    DBHelper.TABLE_EVENTS,
-                    new String[] {"tag, checked"},
-                    "tag = ?",
-                    new String[] {s[i]},
-                    null,
-                    null,
-                    null);
-            Log.d(MonthActivity.TAG, "создали курсор");
 
-            if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
-                Log.d(MonthActivity.TAG, "перемещаем курсор на первую позицию");
-                //запись одной строчки курсора
-                if (b[i]) {
-                    Log.d(MonthActivity.TAG, "b[i] = true");
-                    do {
-                        contentValues.put("checked", 1);
-                        db.insert(TABLE_EVENTS, null, contentValues);
-                        Log.d(MonthActivity.TAG, "запись");
-                    } while (cursor.moveToNext());
-                } else {
-                    Log.d(MonthActivity.TAG, "b[i] = false");
-                    do {
-                        contentValues.put("checked", 0);
-                        db.insert(TABLE_EVENTS, null, contentValues);
-                        Log.d(MonthActivity.TAG, "запись");
-                    } while (cursor.moveToNext());
-                }
+            if (b[i]) {
+                db.update(TABLE_EVENTS, contentValues1, KEY_TAG + "= ?", new String[] {s[i]});
+                db.update(TABLE_MONTH_EVENTS, contentValues1, KEY_TAG + "= ?", new String[] {s[i]});
             } else {
-                Log.d(MonthActivity.TAG, "тэга" + s[i] + "не найдено в TABLE_EVENTS");
+                db.update(TABLE_EVENTS, contentValues0, KEY_TAG + "= ?", new String[] {s[i]});
+                db.update(TABLE_MONTH_EVENTS, contentValues0, KEY_TAG + "= ?", new String[] {s[i]});
             }
         }
 
-        //записываем checked в таблицу MonthEvents
+       /* //записываем checked в таблицу MonthEvents
         for (int i = 0; i < s.length; i++) {
-            cursor = db.query(DBHelper.TABLE_MONTH_EVENTS,
-                    new String[] {"tag, checked"},
-                    "tag = ?",
-                    new String[] {s[i]},
-                    null,
-                    null,
-                    null);
 
-            if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
-                //запись одной строчки курсора
-                if (b[i]) {
-                    do {
-                        contentValues.put("checked", 1);
-                        db.insert(TABLE_EVENTS, null, contentValues);
-                    } while (cursor.moveToNext());
-                } else {
-                    do {
-                        contentValues.put("checked", 0);
-                        db.insert(TABLE_EVENTS, null, contentValues);
-                    } while (cursor.moveToNext());
-                }
-            } else {
-                Log.d(MonthActivity.TAG, "тэга" + s[i] + "не найдено в TABLE_MONTH_EVENTS");
-            }
-        }
+            if (b[i])
+                db.update(TABLE_MONTH_EVENTS, contentValues1, KEY_TAG + "= ?", new String[] {s[i]});
+            else
+                db.update(TABLE_MONTH_EVENTS, contentValues0, KEY_TAG + "= ?", new String[] {s[i]});
 
-        cursor.close();
+
+        }*/
+
     }
 
 }

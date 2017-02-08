@@ -62,7 +62,7 @@ public class MonthActivity extends AppCompatActivity {
     Button[] w5 = {b29, b30, b31, b32, b33, b34, b35};
     Button[] w6 = {b36, b37, b38, b39, b40, b41, b42};
     Button today, button1, button2;
-    static ArrayList<String> tags;
+ //   static ArrayList<String> tags;
 
     public static Calendar rightNow, displayMonth;
 
@@ -194,7 +194,7 @@ public class MonthActivity extends AppCompatActivity {
         //region Инициализация переменных
         rightNow = Calendar.getInstance();              //берем системное время и дату
         displayMonth = (Calendar) rightNow.clone();
-        tags = new ArrayList<>();
+    //    tags = new ArrayList<>();
         Log.d(TAG,"перед созданием dbHelper");
         dbHelper = new DBHelper(this);
         Log.d(TAG,"создан dbHelper");
@@ -333,7 +333,7 @@ public class MonthActivity extends AppCompatActivity {
         }
 
         filter.eventsFilter(c);
-
+        displayEvents();
         Log.d(TAG,"календарь создан");
     }
     public Button btnSearch(int day) {
@@ -486,7 +486,7 @@ public class MonthActivity extends AppCompatActivity {
 
                 return true;
             case R.id.filter:
-                showDialog(0);
+                showDialog(0); //вместо этого надо использовать DialogFragment
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -722,17 +722,19 @@ public class MonthActivity extends AppCompatActivity {
                         int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
                         int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
                         int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
+                        int checkedIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
                         Log.d(TAG,"Таблица events:");
                         do {
                             Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
                                     ", title = " + cursor.getString(titleIndex) +
-                                    ", description = " + cursor.getString(descriptionIndex) +
+                       //             ", description = " + cursor.getString(descriptionIndex) +
                                     ", date = " + cursor.getString(dateIndex) +
                                     ", month = " + cursor.getString(monthIndex) +
                                     ", year = " + cursor.getString(yearIndex) +
                                     ", recur_type = " + cursor.getString(recurTypeIndex) +
                                     ", recur_days = " + cursor.getString(recurDaysIndex) +
-                                    ", tag = " + cursor.getString(tagIndex));
+                                    ", tag = " + cursor.getString(tagIndex) +
+                                    ", checked = " + cursor.getInt(checkedIndex));
                         } while (cursor.moveToNext());
                     } else
                         Log.d(TAG,"записей в events не найдено");
@@ -755,19 +757,19 @@ public class MonthActivity extends AppCompatActivity {
                         int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
                         int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
                         int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
-                        int originalIdIndex = cursor.getColumnIndex(DBHelper.KEY_ORIGINAL_ID);
+                        int checkedIdIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
                         Log.d(TAG,"Таблица month_events:");
                         do {
                             Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
                                     ", title = " + cursor.getString(titleIndex) +
-                                    ", description = " + cursor.getString(descriptionIndex) +
+     //                               ", description = " + cursor.getString(descriptionIndex) +
                                     ", date = " + cursor.getString(dateIndex) +
                                     ", month = " + cursor.getString(monthIndex) +
                                     ", year = " + cursor.getString(yearIndex) +
                                     ", recur_type = " + cursor.getString(recurTypeIndex) +
                                     ", recur_days = " + cursor.getString(recurDaysIndex) +
                                     ", tag = " + cursor.getString(tagIndex) +
-                                    ", original_id = " + cursor.getInt(originalIdIndex));
+                                    ", checked = " + cursor.getInt(checkedIdIndex));
                         } while (cursor.moveToNext());
                     } else
                         Log.d(TAG,"записей в month_events не найдено");
@@ -778,16 +780,12 @@ public class MonthActivity extends AppCompatActivity {
             }}};
     //endregion
 
-
+    //region onCreateDialog()
     protected Dialog onCreateDialog(int id) {
-        Log.d(TAG, "начало метода onCreateDialog()");
-        TagsFilter tagsFilter = new TagsFilter();
-        Log.d(TAG, "создали tagsFilter");
 
-        tags = tagsFilter.tagsFilter();
-        Log.d(TAG, "вызвали метод tagsFilter()");
+        TagsFilter tagsFilter = new TagsFilter();
+        ArrayList<String> tags = tagsFilter.tagsFilter();
         final String [] items = tags.toArray(new String [tags.size()]); //получили массив тэгов
-        Log.d(TAG, "преобразовали ArrayList в массив строк");
 
         //преобразование ArrayList<Boolean> в boolean[]
         ArrayList<Boolean> b = tagsFilter.checkFilter();
@@ -829,6 +827,7 @@ public class MonthActivity extends AppCompatActivity {
                                     Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
                                 }
                                 dbHelper.checkBoxWriter(database, items, checkedItems);
+                                database.close();
                                 StringBuilder state = new StringBuilder();
                                 for (int i = 0; i < items.length; i++) {
                                     state.append("" + items[i]);
@@ -840,6 +839,8 @@ public class MonthActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(),
                                         state.toString(), Toast.LENGTH_LONG)
                                         .show();
+                                cleanColor();
+                                displayEvents();
                             }
                         })
 
@@ -854,6 +855,69 @@ public class MonthActivity extends AppCompatActivity {
         return builder.create();
 
         }
+    //endregion
+
+    void displayEvents() {
+        Log.d(TAG, "начало метода displayEvents()");
+        try {
+            database = dbHelper.getWritableDatabase();
+            Log.d(TAG, "получена копия базы данных getWritableDatabase()");
+        }
+        catch (SQLiteException ex){
+            database = dbHelper.getReadableDatabase();
+            Log.d(TAG, "получена копия базы данных getReadableDatabase()");
+        } catch (Exception e) {
+            Log.d(TAG, "Ошибка чтения базы данных");
+        }
+
+        Cursor cursor = database.query(
+                DBHelper.TABLE_MONTH_EVENTS,
+                new String[] {DBHelper.KEY_DATE, DBHelper.KEY_TAG},
+                DBHelper.KEY_CHECKED + " = ?",
+                new String[] {"1"},
+                null,
+                null,
+                null);
+        Log.d(TAG, "получен курсор");
+
+        Button b;
+        if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
+            Log.d(TAG, "перемещаем курсор на первую позицию");
+            //запись одной строчки курсора
+            do {
+                //находим кнопку, которую надо выделить
+                b = btnSearch(cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
+                Log.d(TAG, "находим кнопку");
+                b.setBackgroundResource(R.color.event);
+                Log.d(TAG, "выделяем кнопку");
+            } while (cursor.moveToNext());
+        } else {
+            Log.d(TAG, "записей в курсоре не найдено");
+        }
+        cursor.close();
+        database.close();
+    }
+
+    void cleanColor() {
+        for (Button j : w1) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+        for (Button j : w2) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+        for (Button j : w3) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+        for (Button j : w4) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+        for (Button j : w5) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+        for (Button j : w6) {
+            j.setBackgroundResource(android.R.color.transparent);
+        }
+    }
 
 
 

@@ -163,6 +163,7 @@ public class Filter {
         int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
         int all_dayIndex = cursor.getColumnIndex(DBHelper.KEY_ALL_DAY);
         int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
+        int checkedIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
 
         contentValues = new ContentValues();
 
@@ -181,6 +182,7 @@ public class Filter {
         contentValues.put("recur_days", cursor.getInt(recurDaysIndex));
         contentValues.put("all_day", cursor.getInt(all_dayIndex));
         contentValues.put("tag", cursor.getString(tagIndex));
+        contentValues.put("checked", cursor.getInt(checkedIndex));
         contentValues.put("original_id", cursor.getInt(idIndex));
 
         database.insert(TABLE_MONTH_EVENTS, null, contentValues);

@@ -18,12 +18,8 @@ public class TagsFilter {
  //   private final static String MonthActivity.TAG = "MyLogs";
     SQLiteDatabase database;
     DBHelper dbHelper;
-    Cursor cursor;
 
-    ArrayList<String> tagsFilter() {
-        Log.d(MonthActivity.TAG, "начало метода tagsFilter()");
-        ArrayList<String> tags = new ArrayList<>();
-
+    TagsFilter() {
         dbHelper = MonthActivity.dbHelper;
         try {
             database = dbHelper.getWritableDatabase();
@@ -35,11 +31,21 @@ public class TagsFilter {
         } catch (Exception e) {
             Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
         }
+    }
 
-//        cursor = database.rawQuery("SELECT DISTINCT tag, checked FROM TABLE_EVENTS", null);
-        cursor = database.rawQuery("SELECT DISTINCT ( " + DBHelper.KEY_TAG + " ), " + DBHelper.KEY_CHECKED + " FROM " + DBHelper.TABLE_EVENTS, null);
+    ArrayList<String> tagsFilter() {
+        Log.d(MonthActivity.TAG, "начало метода tagsFilter()");
+        Cursor cursor = database.rawQuery("SELECT DISTINCT ( " +
+                        DBHelper.KEY_TAG +
+                        " ), " +
+                        DBHelper.KEY_CHECKED +
+                        " FROM " +
+                        DBHelper.TABLE_EVENTS,
+                null);
 
         Log.d(MonthActivity.TAG, "Создаем курсор");
+
+        ArrayList<String> tags = new ArrayList<>();
 
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
             do {
@@ -49,12 +55,22 @@ public class TagsFilter {
         } else {
             Log.d(MonthActivity.TAG, "курсор не содержит записей");
         }
-
+        cursor.close();
         return tags;
     }
 
     ArrayList<Boolean> checkFilter() {
         Log.d(MonthActivity.TAG, "начало метода checkFilter()");
+        Cursor cursor = database.rawQuery("SELECT DISTINCT ( " +
+                        DBHelper.KEY_TAG +
+                        " ), " +
+                        DBHelper.KEY_CHECKED +
+                        " FROM " +
+                        DBHelper.TABLE_EVENTS,
+                null);
+
+        Log.d(MonthActivity.TAG, "Создаем курсор");
+
         ArrayList<Boolean> checkBoxes = new ArrayList<>();
 
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
@@ -67,7 +83,7 @@ public class TagsFilter {
         } else {
             Log.d(MonthActivity.TAG, "курсор не содержит записей");
         }
-
+        cursor.close();
         return checkBoxes;
     }
 }
