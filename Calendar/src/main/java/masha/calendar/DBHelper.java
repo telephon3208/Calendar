@@ -14,7 +14,7 @@ import masha.calendar.MonthActivity;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 15;
+    public static final int DATABASE_VERSION = 22;
     public static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE_EVENTS = "events";
     public static final String TABLE_MONTH_EVENTS = "monthevents";
@@ -31,19 +31,21 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String KEY_RECUR_DAYS = "recur_days";
     public static final String KEY_ALL_DAY = "all_day";
     public static final String KEY_TAG = "tag";
+    public static final String KEY_CHECKED = "checked";
     public static final String KEY_COLOR = "color";
     public static final String KEY_ORIGINAL_ID = "original_id";
 
-    private static final String TAG = "DBHelper";
+ //   private static final String TAG = "MyLogs";
 
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.d(TAG, "конструктор DBHelper");
+        Log.d(MonthActivity.TAG, "конструктор DBHelper");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d(MonthActivity.TAG, "создание новой БД");
         db.execSQL("create table " + TABLE_EVENTS + "(" +
                 KEY_ID + " integer primary key," +
                 KEY_TITLE + " text not null," +
@@ -57,7 +59,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 KEY_RECUR_DAYS + " integer," +
                 KEY_ALL_DAY + " numeric not null default 1," +
                 KEY_TAG + " text," +
+                KEY_CHECKED + " numeric not null default 0," +
                 KEY_COLOR + " blob" + ")");
+
+        Log.d(MonthActivity.TAG, "создана таблица EVENTS");
 
         db.execSQL("create table " + TABLE_MONTH_EVENTS + "(" +
                 KEY_ID + " integer primary key," +
@@ -72,9 +77,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 KEY_RECUR_DAYS + " integer," +
                 KEY_ALL_DAY + " numeric not null default 1," +
                 KEY_TAG + " text," +
+                KEY_CHECKED + " numeric not null default 0," +
                 KEY_COLOR + " blob," +
                 KEY_ORIGINAL_ID + " integer not null" +
                 ")");
+        Log.d(MonthActivity.TAG, "создана таблица MONTH_EVENTS");
 
         MonthActivity.tags.add("Государственные праздники");
         addBaseEvents(db, MonthActivity.tags.get(0));
@@ -109,7 +116,7 @@ public class DBHelper extends SQLiteOpenHelper {
             contentValues.put("all_day", all_day[i]);
             contentValues.put("tag", tags[i]);
             db.insert(TABLE_EVENTS, null, contentValues);
-//            Log.d(TAG, "id = " + db.insert("events", null, contentValues));
+
         }
     }
 
@@ -153,7 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
             contentValues.put("all_day", all_day[i]);
             contentValues.put("tag", tags[i]);
             db.insert(TABLE_EVENTS, null, contentValues);
-//            Log.d(TAG, "id = " + db.insert("events", null, contentValues));
+
         }
     }
 

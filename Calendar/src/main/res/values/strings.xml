@@ -15,5 +15,6 @@
         <item>каждую неделю</item>
         <item>каждые несколько дней</item>
     </string-array>
+    <string name="title_activity_new">New</string>
 
 </resources>

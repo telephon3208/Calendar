@@ -19,7 +19,7 @@ public class DayActivity extends AppCompatActivity {
     int day, month, year, hour, minute;
     FloatingActionButton fAB;
 
-    private final static String TAG = "DayActivity";
+ //   private final static String TAG = "MyLogs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class DayActivity extends AppCompatActivity {
 
     //действия при нажатии на пункты меню
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG,"Начало метода onOptionsItemSelected");
+        Log.d(MonthActivity.TAG,"Начало метода onOptionsItemSelected");
         switch (item.getItemId()){
             case R.id.CreateEvent:
                 createEvent();
@@ -106,7 +106,7 @@ public class DayActivity extends AppCompatActivity {
         intent.putExtra("Час", hour);
         intent.putExtra("Минута", minute);
         startActivity(intent);
-        Log.d(TAG,"Запуск EventActivity");
+        Log.d(MonthActivity.TAG,"Запуск EventActivity");
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {

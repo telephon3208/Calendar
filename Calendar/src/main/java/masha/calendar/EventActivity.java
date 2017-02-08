@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 public class EventActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final static String TAG = "EventActivity";
+    private final static String TAG = "MyLogs";
 
     int day, month, year, hour, minute, recurType = 0, recurDays = 0;
     Button saveBtn, readBtn, clearBtn;

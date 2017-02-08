@@ -22,7 +22,7 @@ import static masha.calendar.DBHelper.TABLE_MONTH_EVENTS;
 
 public class Filter {
 
-    private final static String TAG = "Filter";
+ //   private final static String TAG = "MyLogs";
     SQLiteDatabase database;
     DBHelper dbHelper;
 
@@ -30,21 +30,21 @@ public class Filter {
 
     void eventsFilter(Calendar c) {
 
-        Log.d(TAG, "начало EventsFilter()");
+        Log.d(MonthActivity.TAG, "начало EventsFilter()");
         dbHelper = MonthActivity.dbHelper;
         try {
             database = dbHelper.getWritableDatabase();
-            Log.d(TAG, "получена копия базы данных getWritableDatabase()");
+            Log.d(MonthActivity.TAG, "получена копия базы данных getWritableDatabase()");
         }
         catch (SQLiteException ex){
             database = dbHelper.getReadableDatabase();
-            Log.d(TAG, "получена копия базы данных getReadableDatabase()");
+            Log.d(MonthActivity.TAG, "получена копия базы данных getReadableDatabase()");
         } catch (Exception e) {
-            Log.d(TAG, "Ошибка чтения базы данных");
+            Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
         }
 
         //фильтруем одноразовые события
-        Log.d(TAG, "фильтруем одноразовые события");
+        Log.d(MonthActivity.TAG, "фильтруем одноразовые события");
         Cursor cursor = database.query(
                 DBHelper.TABLE_EVENTS,
                 null,
@@ -58,7 +58,7 @@ public class Filter {
         processEntries(cursor, c);
 
         //фильтруем ежегодные события
-        Log.d(TAG, "фильтруем ежегодные события");
+        Log.d(MonthActivity.TAG, "фильтруем ежегодные события");
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
@@ -73,7 +73,7 @@ public class Filter {
         processEntries(cursor, c);
 
         //фильтруем ежемесячные события
-        Log.d(TAG, "фильтруем ежемесячные события");
+        Log.d(MonthActivity.TAG, "фильтруем ежемесячные события");
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
@@ -87,7 +87,7 @@ public class Filter {
         processEntries(cursor, c);
 
         //Фильтруем еженедельные события
-        Log.d(TAG, "фильтруем еженедельные события");
+        Log.d(MonthActivity.TAG, "фильтруем еженедельные события");
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
@@ -106,7 +106,7 @@ public class Filter {
         processEntries(cursor, c);
 
         //каждые несколько дней
-        Log.d(TAG, "фильтруем события раз в несколько дней");
+        Log.d(MonthActivity.TAG, "фильтруем события раз в несколько дней");
         cursor = database.query(
                 DBHelper.TABLE_EVENTS,
                 null,
@@ -127,11 +127,11 @@ public class Filter {
         cursor.close();
         dbHelper.close();
         database.close();
-        Log.d(TAG, "конец фильтра");
+        Log.d(MonthActivity.TAG, "конец фильтра");
     }
 
     void processEntries(Cursor cursor, Calendar c) {
-        Log.d(TAG, "в объекте cursor " + cursor.getCount() + " записей");
+        Log.d(MonthActivity.TAG, "в объекте cursor " + cursor.getCount() + " записей");
 
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
             int recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
@@ -146,7 +146,7 @@ public class Filter {
                 } while (cursor.moveToNext()) ;
             }
         } else {
-            Log.d(TAG, "курсор не содержит записей");
+            Log.d(MonthActivity.TAG, "курсор не содержит записей");
         }
     }
 
@@ -174,7 +174,8 @@ public class Filter {
         contentValues.put("month", c.get(Calendar.MONTH));
         contentValues.put("year", c.get(Calendar.YEAR));
         contentValues.put("title", cursor.getString(titleIndex));
-        contentValues.put("description", cursor.getString(descriptionIndex));contentValues.put("hour", cursor.getInt(hourIndex));
+        contentValues.put("description", cursor.getString(descriptionIndex));
+        contentValues.put("hour", cursor.getInt(hourIndex));
         contentValues.put("minute", cursor.getInt(minuteIndex));
         contentValues.put("recur_type", cursor.getInt(recurTypeIndex));
         contentValues.put("recur_days", cursor.getInt(recurDaysIndex));
@@ -187,7 +188,7 @@ public class Filter {
     }
 
     void computeRecurDays(Cursor cursor, Calendar c) {
-        Log.d(TAG, "Начало метода computeRecurDays");
+        Log.d(MonthActivity.TAG, "Начало метода computeRecurDays");
         //создаю календарь соответствующий найденному событию
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));

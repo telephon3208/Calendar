@@ -69,7 +69,7 @@ public class MonthActivity extends AppCompatActivity {
     TimePickerDialog.OnTimeSetListener t;
     DatePickerDialog.OnDateSetListener d;
 
-    private final static String TAG = "MonthActivity";
+    public final static String TAG = "MyLogs";
     SQLiteDatabase database;
     static DBHelper dbHelper;
     Filter filter;
@@ -197,8 +197,9 @@ public class MonthActivity extends AppCompatActivity {
         tags = new ArrayList<>();
         Log.d(TAG,"перед созданием dbHelper");
         dbHelper = new DBHelper(this);
-        filter = new Filter();
         Log.d(TAG,"создан dbHelper");
+        filter = new Filter();
+
         //endregion
 
         createCalendar(rightNow);              //создаем календарь
@@ -264,10 +265,12 @@ public class MonthActivity extends AppCompatActivity {
 
     //region Создание календаря
     public void createCalendar(Calendar c) {
-
+        Log.d(TAG,"начало createCalendar()");
         cleanAll();                     //очищаем все
+
         int weekDay;                    //текущий день недели
         int maxDay = lastDayOfMonth(c); //вычисляем количество дней в месяце
+
         int dayNumber = c.get(Calendar.DAY_OF_MONTH);
 
         if (c.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
@@ -326,11 +329,11 @@ public class MonthActivity extends AppCompatActivity {
                 rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
             today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
             today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
-            Log.d(TAG,"Кнопка today выделена");
+
         }
-//        eventsFilter(); //выделяем события месяца
 
         filter.eventsFilter(c);
+
         Log.d(TAG,"календарь создан");
     }
     public Button btnSearch(int day) {
@@ -421,6 +424,7 @@ public class MonthActivity extends AppCompatActivity {
             j.setText("");
             j.setBackgroundResource(android.R.color.transparent);
         }
+        Log.d(TAG,"удаляем текст");
         findViewById(R.id.line29).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line30).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line31).setBackgroundResource(android.R.color.transparent);
@@ -435,17 +439,20 @@ public class MonthActivity extends AppCompatActivity {
         findViewById(R.id.line40).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line41).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line42).setBackgroundResource(android.R.color.transparent);
+        Log.d(TAG,"удаляем лишние линии");
 
         try {
             database = dbHelper.getWritableDatabase();
         }
         catch (SQLiteException ex){
+            Log.d(TAG,"не удалось выполнить getWritableDatabase()");
             database = dbHelper.getReadableDatabase();
         } catch (Exception e) {
             Log.d(TAG,"Ошибка чтения БД");
         }
         database.delete(DBHelper.TABLE_MONTH_EVENTS, null, null);
 
+        database.close();
     }
 
     int lastDayOfMonth(Calendar c) {
@@ -515,6 +522,7 @@ public class MonthActivity extends AppCompatActivity {
     View.OnClickListener arrowsListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             switch (v.getId()) {
                 case R.id.arrowLeft:
                     if (displayMonth.get(Calendar.MONTH) >= 1)
@@ -545,7 +553,8 @@ public class MonthActivity extends AppCompatActivity {
         public void onClick(View v) {
             Button b = (Button) v;
             if (!b.getText().equals("")) {
-                Intent intent = new Intent(MonthActivity.this, DayActivity.class);
+    //            Intent intent = new Intent(MonthActivity.this, DayActivity.class);
+                Intent intent = new Intent(MonthActivity.this, New.class);
                 intent.putExtra("Число", b.getText());
                 switch (v.getId()) {
                     case R.id.b1:
@@ -770,20 +779,36 @@ public class MonthActivity extends AppCompatActivity {
     //endregion
 
 
-
     protected Dialog onCreateDialog(int id) {
-        final boolean[] mCheckedItems = { false, true, false };
-        final String[] checkCatsName = { "Васька", "Рыжик", "Мурзик" };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Выберите котов")
-                .setCancelable(false)
+        Log.d(TAG, "начало метода onCreateDialog()");
+        TagsFilter tagsFilter = new TagsFilter();
+        Log.d(TAG, "создали tagsFilter");
 
-                .setMultiChoiceItems(checkCatsName, mCheckedItems,
+        tags = tagsFilter.tagsFilter();
+        Log.d(TAG, "вызвали метод tagsFilter()");
+        final String [] items = tags.toArray(new String [tags.size()]); //получили массив тэгов
+        Log.d(TAG, "преобразовали ArrayList в массив строк");
+
+        //преобразование ArrayList<Boolean> в boolean[]
+        ArrayList<Boolean> b = tagsFilter.checkFilter();
+        Log.d(TAG, "вызвали метод checkFilter()");
+        final Boolean[] b1 = b.toArray(new Boolean [b.size()]);
+        final boolean checkedItems [] = new boolean[b1.length];
+
+        for (int i = 0; i < checkedItems.length; i++) {
+                checkedItems[i] = b1[i];
+        }
+        Log.d(TAG, "преобразовали ArrayList в массив boolean");
+            //получили массив чекбоксов
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите события для отображения")
+                .setCancelable(false)
+                .setMultiChoiceItems(items, checkedItems,
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int which, boolean isChecked) {
-                                mCheckedItems[which] = isChecked;
+                                checkedItems[which] = isChecked;
                             }
                         })
 
@@ -794,9 +819,9 @@ public class MonthActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog,
                                                 int id) {
                                 StringBuilder state = new StringBuilder();
-                                for (int i = 0; i < checkCatsName.length; i++) {
-                                    state.append("" + checkCatsName[i]);
-                                    if (mCheckedItems[i])
+                                for (int i = 0; i < items.length; i++) {
+                                    state.append("" + items[i]);
+                                    if (checkedItems[i])
                                         state.append(" выбран\n");
                                     else
                                         state.append(" не выбран\n");
