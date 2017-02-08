@@ -2,6 +2,7 @@ package masha.calendar;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -162,6 +163,89 @@ public class DBHelper extends SQLiteOpenHelper {
             db.insert(TABLE_EVENTS, null, contentValues);
 
         }
+    }
+
+    void checkBoxWriter(SQLiteDatabase db, String[] s, boolean[] b) {
+        Log.d(MonthActivity.TAG, "начало метода checkBoxWriter()");
+        ContentValues contentValues = new ContentValues();
+        Cursor cursor = db.query(DBHelper.TABLE_EVENTS, //инициализирую курсор
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        //записываем checked в таблицу Events
+        for (int i = 0; i < s.length; i++) {
+            Log.d(MonthActivity.TAG, "String[] имеет " + s.length + " членов");
+            Log.d(MonthActivity.TAG, "s[0] = " + s[0]);
+            Log.d(MonthActivity.TAG, "s[1] = " + s[1]);
+            Log.d(MonthActivity.TAG, "boolean[] имеет " + b.length + " членов");
+            Log.d(MonthActivity.TAG, "b[0] = " + b[0]);
+            Log.d(MonthActivity.TAG, "b[1] = " + b[1]);
+            cursor = db.query(
+                    DBHelper.TABLE_EVENTS,
+                    new String[] {"tag, checked"},
+                    "tag = ?",
+                    new String[] {s[i]},
+                    null,
+                    null,
+                    null);
+            Log.d(MonthActivity.TAG, "создали курсор");
+
+            if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
+                Log.d(MonthActivity.TAG, "перемещаем курсор на первую позицию");
+                //запись одной строчки курсора
+                if (b[i]) {
+                    Log.d(MonthActivity.TAG, "b[i] = true");
+                    do {
+                        contentValues.put("checked", 1);
+                        db.insert(TABLE_EVENTS, null, contentValues);
+                        Log.d(MonthActivity.TAG, "запись");
+                    } while (cursor.moveToNext());
+                } else {
+                    Log.d(MonthActivity.TAG, "b[i] = false");
+                    do {
+                        contentValues.put("checked", 0);
+                        db.insert(TABLE_EVENTS, null, contentValues);
+                        Log.d(MonthActivity.TAG, "запись");
+                    } while (cursor.moveToNext());
+                }
+            } else {
+                Log.d(MonthActivity.TAG, "тэга" + s[i] + "не найдено в TABLE_EVENTS");
+            }
+        }
+
+        //записываем checked в таблицу MonthEvents
+        for (int i = 0; i < s.length; i++) {
+            cursor = db.query(DBHelper.TABLE_MONTH_EVENTS,
+                    new String[] {"tag, checked"},
+                    "tag = ?",
+                    new String[] {s[i]},
+                    null,
+                    null,
+                    null);
+
+            if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
+                //запись одной строчки курсора
+                if (b[i]) {
+                    do {
+                        contentValues.put("checked", 1);
+                        db.insert(TABLE_EVENTS, null, contentValues);
+                    } while (cursor.moveToNext());
+                } else {
+                    do {
+                        contentValues.put("checked", 0);
+                        db.insert(TABLE_EVENTS, null, contentValues);
+                    } while (cursor.moveToNext());
+                }
+            } else {
+                Log.d(MonthActivity.TAG, "тэга" + s[i] + "не найдено в TABLE_MONTH_EVENTS");
+            }
+        }
+
+        cursor.close();
     }
 
 }

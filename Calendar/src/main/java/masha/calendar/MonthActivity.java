@@ -818,6 +818,17 @@ public class MonthActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int id) {
+                                try {
+                                    database = dbHelper.getWritableDatabase();
+                                    Log.d(MonthActivity.TAG, "получена копия базы данных getWritableDatabase()");
+                                }
+                                catch (SQLiteException ex){
+                                    database = dbHelper.getReadableDatabase();
+                                    Log.d(MonthActivity.TAG, "получена копия базы данных getReadableDatabase()");
+                                } catch (Exception e) {
+                                    Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
+                                }
+                                dbHelper.checkBoxWriter(database, items, checkedItems);
                                 StringBuilder state = new StringBuilder();
                                 for (int i = 0; i < items.length; i++) {
                                     state.append("" + items[i]);
