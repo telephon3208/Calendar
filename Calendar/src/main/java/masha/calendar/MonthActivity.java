@@ -62,7 +62,6 @@ public class MonthActivity extends AppCompatActivity {
     Button[] w5 = {b29, b30, b31, b32, b33, b34, b35};
     Button[] w6 = {b36, b37, b38, b39, b40, b41, b42};
     Button today, button1, button2;
- //   static ArrayList<String> tags;
 
     public static Calendar rightNow, displayMonth;
 
@@ -194,10 +193,7 @@ public class MonthActivity extends AppCompatActivity {
         //region Инициализация переменных
         rightNow = Calendar.getInstance();              //берем системное время и дату
         displayMonth = (Calendar) rightNow.clone();
-    //    tags = new ArrayList<>();
-        Log.d(TAG,"перед созданием dbHelper");
         dbHelper = new DBHelper(this);
-        Log.d(TAG,"создан dbHelper");
         filter = new Filter();
 
         //endregion
@@ -325,12 +321,7 @@ public class MonthActivity extends AppCompatActivity {
 
         displayTime();
 
-        if (rightNow.get(Calendar.MONTH) == displayMonth.get(Calendar.MONTH) &&
-                rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
-            today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
-            today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
-
-        }
+        highlightTodayButton();
 
         filter.eventsFilter(c);
         displayEvents();
@@ -840,6 +831,7 @@ public class MonthActivity extends AppCompatActivity {
                                         state.toString(), Toast.LENGTH_LONG)
                                         .show();
                                 cleanColor();
+                                highlightTodayButton();
                                 displayEvents();
                             }
                         })
@@ -858,7 +850,7 @@ public class MonthActivity extends AppCompatActivity {
     //endregion
 
     void displayEvents() {
-        Log.d(TAG, "начало метода displayEvents()");
+
         try {
             database = dbHelper.getWritableDatabase();
             Log.d(TAG, "получена копия базы данных getWritableDatabase()");
@@ -878,21 +870,17 @@ public class MonthActivity extends AppCompatActivity {
                 null,
                 null,
                 null);
-        Log.d(TAG, "получен курсор");
 
         Button b;
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
-            Log.d(TAG, "перемещаем курсор на первую позицию");
             //запись одной строчки курсора
             do {
                 //находим кнопку, которую надо выделить
                 b = btnSearch(cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
-                Log.d(TAG, "находим кнопку");
                 b.setBackgroundResource(R.color.event);
-                Log.d(TAG, "выделяем кнопку");
             } while (cursor.moveToNext());
         } else {
-            Log.d(TAG, "записей в курсоре не найдено");
+            Log.d(TAG, "событий для отображения не найдено");
         }
         cursor.close();
         database.close();
@@ -916,6 +904,15 @@ public class MonthActivity extends AppCompatActivity {
         }
         for (Button j : w6) {
             j.setBackgroundResource(android.R.color.transparent);
+        }
+    }
+
+    void highlightTodayButton() {
+        if (rightNow.get(Calendar.MONTH) == displayMonth.get(Calendar.MONTH) &&
+                rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
+            today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
+            today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
+
         }
     }
 

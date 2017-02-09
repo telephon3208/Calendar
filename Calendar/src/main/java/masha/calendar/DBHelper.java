@@ -15,7 +15,7 @@ import masha.calendar.MonthActivity;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 22;
+    public static final int DATABASE_VERSION = 24;
     public static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE_EVENTS = "events";
     public static final String TABLE_MONTH_EVENTS = "monthevents";
@@ -98,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         int month[] = { 0, 7, 2, 0};
         int year[] = { 1988, 2016, 2017, 2017};
         int recur_type[] = { 2, 3, 0, 4};
-        int recur_days[] = { 0, 0, 0, 8};
+        int recur_days[] = { 0, 7, 0, 8};
         int all_day[] = { 1, 1, 1, 1 };
         String tags[] = {
                 "test event",

@@ -43,95 +43,91 @@ public class Filter {
             Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
         }
 
+   //     String date = String.format("%s", c.get(Calendar.DAY_OF_MONTH));
+        String month = String.format("%s", c.get(Calendar.MONTH));
+        String year = String.format("%s", c.get(Calendar.YEAR));
+
         //фильтруем одноразовые события
-        Log.d(MonthActivity.TAG, "фильтруем одноразовые события");
         Cursor cursor = database.query(
                 DBHelper.TABLE_EVENTS,
                 null,
                 "recur_type = ? AND year = ? AND month = ?", //условие для выборки
-                new String [] {"0",
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH))},
+                new String [] {"0", year, month},
                 null,
                 null,
                 null);
         processEntries(cursor, c);
 
         //фильтруем ежегодные события
-        Log.d(MonthActivity.TAG, "фильтруем ежегодные события");
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
-                "(recur_type = ? AND month = ?) AND (year < ? OR year = ?)", //условие для выборки
-                new String [] {"1",
-                        String.format("%s", c.get(Calendar.MONTH)),
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.YEAR))},
+                "recur_type = ? AND month = ? AND year <= ?", //условие для выборки
+                new String [] {"1", month, year},
                 null,
                 null,
                 null);
         processEntries(cursor, c);
 
         //фильтруем ежемесячные события
-        Log.d(MonthActivity.TAG, "фильтруем ежемесячные события");
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
-                "(recur_type = ? AND year <= ?) AND month <= ?", //условие для выборки
-                new String [] {"2",
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH))},
+                "recur_type = ? AND year <= ? AND month <= ?", //условие для выборки
+                new String [] {"2", year, month},
                 null,
                 null,
                 null);
         processEntries(cursor, c);
 
-        //Фильтруем еженедельные события
-        Log.d(MonthActivity.TAG, "фильтруем еженедельные события");
+        //фильтруем события раз в несколько дней
+        String where = "recur_type IN (3, 4) AND ((year = ? AND month <= ?) OR year < ?)";
+
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
                 null,
-                "recur_type = ? AND ((year = ? AND month = ? AND date <= ?) OR " +
-                        "(year = ? AND month < ?) OR (year < ?))", //условие для выборки
-                new String [] {"3",
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH)),
-                        String.format("%s", c.get(Calendar.DAY_OF_MONTH)),
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH)),
-                        String.format("%s", c.get(Calendar.YEAR))},
+                where,
+                new String [] {year, month, year},
                 null,
                 null,
                 null);
-        processEntries(cursor, c);
 
-        //каждые несколько дней
-        Log.d(MonthActivity.TAG, "фильтруем события раз в несколько дней");
-        cursor = database.query(
-                DBHelper.TABLE_EVENTS,
-                null,
-                "recur_type = ? AND ((year = ? AND month = ? AND date <= ?) OR " +
-                        "(year = ? AND month < ?) OR (year < ?))", //условие для выборки
-                new String [] {"4",
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH)),
-                        String.format("%s", c.get(Calendar.DAY_OF_MONTH)),
-                        String.format("%s", c.get(Calendar.YEAR)),
-                        String.format("%s", c.get(Calendar.MONTH)),
-                        String.format("%s", c.get(Calendar.YEAR))},
-                null,
-                null,
-                null);
+        //проверяем что курсор нафильтровал
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+            int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
+            int descriptionIndex = cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION);
+            int dateIndex = cursor.getColumnIndex(DBHelper.KEY_DATE);
+            int monthIndex = cursor.getColumnIndex(DBHelper.KEY_MONTH);
+            int yearIndex = cursor.getColumnIndex(DBHelper.KEY_YEAR);
+            int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
+            int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
+            int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
+            int checkedIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
+            Log.d(MonthActivity.TAG,"Содержимое курсора:");
+            do {
+                Log.d(MonthActivity.TAG, "ID = " + cursor.getInt(idIndex) +
+                        ", title = " + cursor.getString(titleIndex) +
+                        //             ", description = " + cursor.getString(descriptionIndex) +
+                        ", date = " + cursor.getString(dateIndex) +
+                        ", month = " + cursor.getString(monthIndex) +
+                        ", year = " + cursor.getString(yearIndex) +
+                        ", recur_type = " + cursor.getString(recurTypeIndex) +
+                        ", recur_days = " + cursor.getString(recurDaysIndex) +
+                        ", tag = " + cursor.getString(tagIndex) +
+                        ", checked = " + cursor.getInt(checkedIndex));
+            } while (cursor.moveToNext());
+        } else
+            Log.d(MonthActivity.TAG,"записей в курсоре не найдено");
+
         processEntries(cursor, c);
 
         cursor.close();
         dbHelper.close();
         database.close();
-        Log.d(MonthActivity.TAG, "конец фильтра");
     }
 
     void processEntries(Cursor cursor, Calendar c) {
-        Log.d(MonthActivity.TAG, "в объекте cursor " + cursor.getCount() + " записей");
 
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
             int recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
@@ -190,57 +186,54 @@ public class Filter {
     }
 
     void computeRecurDays(Cursor cursor, Calendar c) {
-        Log.d(MonthActivity.TAG, "Начало метода computeRecurDays");
         //создаю календарь соответствующий найденному событию
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));
-        cal.set(Calendar.MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH)));
-        cal.set(Calendar.DAY_OF_MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        Calendar firstEvent = Calendar.getInstance();
+        firstEvent.set(Calendar.YEAR, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));
+        Log.d(MonthActivity.TAG, "год firstEvent : " + cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));
+        firstEvent.set(Calendar.MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH)));
+        Log.d(MonthActivity.TAG, "месяц firstEvent : " + cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH)));
+        firstEvent.set(Calendar.DAY_OF_MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
+        Log.d(MonthActivity.TAG, "день firstEvent : " + cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
+        //выставляем нулевое время
+        firstEvent.set(Calendar.HOUR_OF_DAY, 0);
+        firstEvent.set(Calendar.MINUTE, 0);
+        firstEvent.set(Calendar.SECOND, 0);
+        firstEvent.set(Calendar.MILLISECOND, 0);
 
         //создаю копию отборажаемого календаря
-        Calendar event = (Calendar) c.clone();
-        event.set(Calendar.DAY_OF_MONTH, 1);
-        event.set(Calendar.HOUR_OF_DAY, 0);
-        event.set(Calendar.MINUTE, 0);
-        event.set(Calendar.SECOND, 0);
-        event.set(Calendar.MILLISECOND, 0);
+        Calendar nextEvent = (Calendar) c.clone();
+        nextEvent.set(Calendar.DAY_OF_MONTH, 1);
+        //выставляем нулевое время
+        nextEvent.set(Calendar.HOUR_OF_DAY, 0);
+        nextEvent.set(Calendar.MINUTE, 0);
+        nextEvent.set(Calendar.SECOND, 0);
+        nextEvent.set(Calendar.MILLISECOND, 0);
+        Log.d(MonthActivity.TAG, "год nextEvent : " + nextEvent.get(Calendar.YEAR));
+        Log.d(MonthActivity.TAG, "месяц nextEvent : " + nextEvent.get(Calendar.MONTH));
+        Log.d(MonthActivity.TAG, "день nextEvent : " + nextEvent.get(Calendar.DAY_OF_MONTH));
 
-        if (event.after(cal)) {   //если событие было в прошлом
-            int displayMonth = event.get(Calendar.MONTH);
-            int displayYear = event.get(Calendar.YEAR);
-            int recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
-            if (recurDays == 0) recurDays = 7; //чтобы не делить на ноль
+        int recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
+        if (recurDays == 0) recurDays = 7; //чтобы не делить на ноль
 
-            if ((displayMonth == cal.get(Calendar.MONTH)
-                    && (displayYear == cal.get(Calendar.YEAR)))) {
+        //если открыт месяц начала регулярных событий
+        if (firstEvent.get(Calendar.MONTH) == c.get(Calendar.MONTH)) {
+            while (c.get(Calendar.MONTH) == firstEvent.get(Calendar.YEAR)) {
+                addEntry(cursor, c);
+                c.add(Calendar.DAY_OF_MONTH, recurDays);
+            }
+        } else { //если открыт последующий месяц
 
-                event.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+            //высичляю количество миллисекунд между первым firstEvent и каждым днем текущего месяца
+            //если нецелое количество циклов то прибавляем по одному дню
+            while ((nextEvent.getTimeInMillis() - firstEvent.getTimeInMillis())
+                    % (1000 * 60 * 60 * 24 * recurDays) != 0) {
+                nextEvent.add(Calendar.DAY_OF_MONTH, 1);
+            }
 
-                while (displayYear == cal.get(Calendar.YEAR)) {
-                    addEntry(cursor, event);
-                    event.add(Calendar.DAY_OF_MONTH, recurDays);
-                }
-            } else {
-                if (((displayMonth > cal.get(Calendar.MONTH)
-                        && (displayYear == cal.get(Calendar.YEAR))))
-                        || (displayYear > cal.get(Calendar.YEAR))) {
-
-                    //если нецелое количество циклов то прибавляем по одному дню
-                    while ((event.getTimeInMillis() - cal.getTimeInMillis())
-                            % (1000 * 60 * 60 * 24 * recurDays) != 0) {
-                        event.add(Calendar.DAY_OF_MONTH, 1);
-                    }
-
-                    //прибавляем по одному циклу и заносим в таблицу пока не кончится месяц
-                    while (event.get(Calendar.MONTH) == displayMonth) {
-                        addEntry(cursor, event);
-                        event.add(Calendar.DAY_OF_MONTH, recurDays);
-                    }
-                }
+            //прибавляем по одному циклу и заносим в таблицу пока не кончится месяц
+            while (nextEvent.get(Calendar.MONTH) == c.get(Calendar.MONTH)) {
+                addEntry(cursor, nextEvent);
+                nextEvent.add(Calendar.DAY_OF_MONTH, recurDays);
             }
         }
     }
