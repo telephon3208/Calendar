@@ -278,8 +278,10 @@ public class MonthActivity extends AppCompatActivity {
             dayNumber--;
             if (weekDay == 0) weekDay = 7;
         }
+      //  Log.d(TAG,"день недели первого числа месяца: " + getMinimalDaysInFirstWeek(c));
 
         int daysIn1W = 7 - weekDay + 1;             //количество дней месяца в 1 неделе(строке)
+        Log.d(TAG,"количество дней в первой неделе месяца: " + c.getMinimalDaysInFirstWeek());
 
         if (!(weekDay == 1 && maxDay == 28)) {
             findViewById(R.id.line29).setBackgroundResource(R.color.mainColorLight);
@@ -415,7 +417,7 @@ public class MonthActivity extends AppCompatActivity {
             j.setText("");
             j.setBackgroundResource(android.R.color.transparent);
         }
-        Log.d(TAG,"удаляем текст");
+
         findViewById(R.id.line29).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line30).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line31).setBackgroundResource(android.R.color.transparent);
@@ -430,13 +432,11 @@ public class MonthActivity extends AppCompatActivity {
         findViewById(R.id.line40).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line41).setBackgroundResource(android.R.color.transparent);
         findViewById(R.id.line42).setBackgroundResource(android.R.color.transparent);
-        Log.d(TAG,"удаляем лишние линии");
 
         try {
             database = dbHelper.getWritableDatabase();
         }
         catch (SQLiteException ex){
-            Log.d(TAG,"не удалось выполнить getWritableDatabase()");
             database = dbHelper.getReadableDatabase();
         } catch (Exception e) {
             Log.d(TAG,"Ошибка чтения БД");
@@ -545,7 +545,7 @@ public class MonthActivity extends AppCompatActivity {
             Button b = (Button) v;
             if (!b.getText().equals("")) {
     //            Intent intent = new Intent(MonthActivity.this, DayActivity.class);
-                Intent intent = new Intent(MonthActivity.this, New.class);
+                Intent intent = new Intent(MonthActivity.this, DayActivity.class);
                 intent.putExtra("Число", b.getText());
                 switch (v.getId()) {
                     case R.id.b1:

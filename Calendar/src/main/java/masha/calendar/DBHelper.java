@@ -191,17 +191,8 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }
 
-       /* //записываем checked в таблицу MonthEvents
-        for (int i = 0; i < s.length; i++) {
-
-            if (b[i])
-                db.update(TABLE_MONTH_EVENTS, contentValues1, KEY_TAG + "= ?", new String[] {s[i]});
-            else
-                db.update(TABLE_MONTH_EVENTS, contentValues0, KEY_TAG + "= ?", new String[] {s[i]});
-
-
-        }*/
-
     }
+
+
 
 }

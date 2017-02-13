@@ -1,161 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_day"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="top|center_horizontal"
+    android:fitsSystemWindows="true"
     tools:context="masha.calendar.DayActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <include layout="@layout/content_day" />
 
-        <TextView
-            android:text="Дата"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/dateView"
-            android:textSize="30sp"
-            android:padding="15dp"
-            android:textColor="@android:color/black"
-            android:textAlignment="center"
-            android:textStyle="normal|bold"
-            android:layout_gravity="center_horizontal" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <EditText
-                android:hint="Время"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/timeView1"
-                android:textSize="24sp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:textColor="@android:color/black"
-                android:inputType="time"
-                android:ems="10"
-                android:maxLines="1"/>
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/verLine1"
-                android:width="1dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:background="@color/mainColorLight"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/event1"
-                android:paddingStart="20dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:inputType="textMultiLine"
-                android:ems="10"
-                android:hint="Событие"/>
-
-        </LinearLayout>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/horLine1"
-            android:height="1dp"
-            android:background="@android:color/black" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:hint="Время"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/timeView2"
-                android:textSize="24sp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:textColor="@android:color/black"/>
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/verLine2"
-                android:width="1dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:background="@color/mainColorLight"/>
-
-            <EditText
-                android:hint="Событие"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/event2"
-                android:paddingStart="20dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:inputType="textMultiLine"
-                android:ems="10"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/horLine2"
-            android:height="1dp"
-            android:background="@android:color/black" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="bottom|right">
-
-            <android.support.design.widget.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                app:fabSize="auto"
-                app:srcCompat="@android:drawable/ic_menu_add"
-                android:id="@+id/fAB"
-                app:rippleColor="@color/mainColorLight"
-                app:backgroundTint="@color/mainColor"
-                android:layout_margin="20dp"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-
-</ScrollView>
-
+</android.support.design.widget.CoordinatorLayout>

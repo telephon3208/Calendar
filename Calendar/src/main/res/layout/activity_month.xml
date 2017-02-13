@@ -124,12 +124,12 @@
 
             <Button
                 android:id="@+id/b6"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:id="@+id/b7"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
         </TableRow>
 
@@ -193,12 +193,12 @@
 
             <Button
                 android:id="@+id/b13"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:id="@+id/b14"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
         </TableRow>
@@ -265,12 +265,12 @@
 
             <Button
                 android:id="@+id/b20"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:id="@+id/b21"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
         </TableRow>
 
@@ -334,12 +334,12 @@
 
             <Button
                 android:id="@+id/b27"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:id="@+id/b28"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
         </TableRow>
@@ -406,12 +406,12 @@
 
             <Button
                 android:id="@+id/b34"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
             <Button
                 android:id="@+id/b35"
-                style="@style/ButtonStyle.Gray"
+                style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
         </TableRow>

@@ -126,7 +126,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/hourPicker"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:dividerPadding="5dp"
+                android:divider="@color/mainColorLight"/>
 
             <NumberPicker
                 android:layout_width="wrap_content"
@@ -155,7 +157,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/spinner"
-            android:entries="@array/recurList"/>
+            android:entries="@array/recurList"
+            android:minHeight="20dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -198,39 +201,50 @@
             android:id="@+id/tagTitle"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"/>
 
         <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tagView"
-            android:inputType="textPersonName"
+            android:inputType="text"
             android:hint="Тэг"
             android:ems="10"
             android:textSize="24sp"
             android:maxLines="2"
-            android:textAlignment="center" />
+            android:gravity="left" />
 
-        <Button
-            android:text="Сохранить"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/saveBtn"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_margin="10dp" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
 
-        <Button
-            android:text="Считать из БД"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/readBtn" />
+            <Button
+                android:text="Сохранить"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/saveBtn"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_margin="10dp"
+                android:background="@color/mainColorLight"
+                android:layout_weight="1" />
 
-        <Button
-            android:text="Очистить"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/clearBtn" />
+            <Button
+                android:text="Отмена"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cancel"
+                android:background="@color/mainColorLight"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_margin="10dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

@@ -6,8 +6,13 @@
         <item name="colorPrimary">@color/mainColor</item>
         <item name="colorPrimaryDark">@color/mainColor</item>
         <item name="colorAccent">@color/mainColorLight</item>
+        <item name="android:dropDownListViewStyle">@style/mySpinnerStyle</item>
     </style>
-
+    <style name="mySpinnerStyle">
+        <!-- Customize your theme here. -->
+        <item name="android:divider">@color/mainColorLight</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
     <style name="ButtonStyle">
         <!-- Customize your theme here. -->
         <item name="android:visibility">visible</item>
@@ -23,9 +28,9 @@
 
     </style>
 
-    <style name="ButtonStyle.Gray">
+    <style name="ButtonStyle.Weekend2">
         <!-- Customize your theme here. -->
-        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="ButtonStyle.Today">
