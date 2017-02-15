@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <item android:id="@+id/SetDate"
@@ -19,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orderInCategory="1"
-        android:showAsAction="always" />
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_manage"/>
 
 </menu>

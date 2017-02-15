@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="masha.calendar.MonthActivity">
+    tools:context="masha.myapplication.MainActivity">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -17,7 +17,7 @@
         android:layout_gravity="top|center"
         android:layout_marginBottom="10dp">
 
-        <Button
+        <ImageButton
             android:layout_height="wrap_content"
             android:id="@+id/arrowLeft"
             android:layout_weight="1"
@@ -37,7 +37,7 @@
             android:maxLines="2"
             android:layout_gravity="center"/>
 
-        <Button
+        <ImageButton
             android:layout_height="wrap_content"
             android:id="@+id/arrowRight"
             android:layout_weight="1"
@@ -59,38 +59,38 @@
             android:layout_height="match_parent"
             android:id="@+id/shapka">
 
-            <Button
+            <ImageButton
                 android:text="Пн"
                 android:id="@+id/weekDay1"
                 style="@style/ButtonStyle.Workday" />
 
-            <Button
+            <ImageButton
                 android:text="Вт"
                 android:id="@+id/weekDay2"
                 style="@style/ButtonStyle.Workday" />
 
-            <Button
+            <ImageButton
                 android:text="Ср"
                 android:id="@+id/weekDay3"
                 style="@style/ButtonStyle.Workday" />
 
-            <Button
+            <ImageButton
                 android:text="Чт"
                 android:id="@+id/weekDay4"
                 style="@style/ButtonStyle.Workday" />
 
-            <Button
+            <ImageButton
                 android:text="Пт"
                 android:id="@+id/weekDay5"
                 style="@style/ButtonStyle.Workday" />
 
-            <Button
+            <ImageButton
                 android:text="Сб"
                 android:id="@+id/weekDay6"
                 style="@style/ButtonStyle.Weekend"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:text="Вс"
                 android:id="@+id/weekDay7"
                 style="@style/ButtonStyle.Weekend"
@@ -103,32 +103,34 @@
             android:layout_height="match_parent"
             android:id="@+id/week1">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b1"
+                android:clickable="true"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b2"
-                style="@style/ButtonStyle" />
+                style="@style/ButtonStyle"
+                android:background="@color/transparent" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b3"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b4"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b5"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b6"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b7"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
@@ -172,32 +174,32 @@
             android:layout_height="match_parent"
             android:id="@+id/week2">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b8"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b9"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b10"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b11"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b12"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b13"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b14"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
@@ -244,32 +246,32 @@
             android:layout_height="match_parent"
             android:id="@+id/week3">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b15"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b16"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b17"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b18"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b19"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b20"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b21"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
@@ -313,32 +315,32 @@
             android:layout_height="match_parent"
             android:id="@+id/week4">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b22"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b23"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b24"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b25"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b26"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b27"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b28"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
@@ -385,32 +387,32 @@
             android:layout_height="match_parent"
             android:id="@+id/week5">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b29"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b30"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b31"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b32"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b33"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b34"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b35"
                 style="@style/ButtonStyle.Weekend2"
                 android:textStyle="normal|bold" />
@@ -457,32 +459,32 @@
             android:layout_height="match_parent"
             android:id="@+id/week6">
 
-            <Button
+            <ImageButton
                 android:id="@+id/b36"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b37"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b38"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b39"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b40"
                 style="@style/ButtonStyle" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b41"
                 style="@style/ButtonStyle"
                 android:textStyle="normal|bold" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/b42"
                 style="@style/ButtonStyle"
                 android:textStyle="normal|bold" />
@@ -496,8 +498,7 @@
 
             <TextView
                 android:id="@+id/line36"
-                style="@style/LineStyle"
-                />
+                style="@style/LineStyle" />
 
             <TextView
                 style="@style/LineStyle"

@@ -76,8 +76,8 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         dayPicker.setMinValue(1);
         dayPicker.setDividerPadding(5);
 
-        monthPicker.setMaxValue(12);
-        monthPicker.setMinValue(1);
+        monthPicker.setMaxValue(11);
+        monthPicker.setMinValue(0);
         monthPicker.setDisplayedValues( new String[] { "Январь", "Февраль", "Март", "Апрель",
                 "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" } );
         monthPicker.setDividerPadding(5);
@@ -163,7 +163,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             minute = intent.getIntExtra("Минута", 0);
         }
         dayPicker.setValue(day);
-        monthPicker.setValue(month + 1);
+        monthPicker.setValue(month);
         yearPicker.setValue(year);
         hourPicker.setValue(hour);
         minutePicker.setValue(minute);
@@ -194,14 +194,14 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             case R.id.saveBtn:
                 if (createEvent) {
                     createEvent();
-            //        onDestroy();
+                    onBackPressed();
                 } else {
                     editEvent();
-            //        onDestroy();
+                    onBackPressed();
                 }
                 break;
             case R.id.cancel:
-            //    onDestroy();
+                onBackPressed();
                 break;
         }
         dbHelper.close();
@@ -224,7 +224,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
         contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
         contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
-        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue() - 1);
+        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
         contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
         contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
         contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
@@ -259,7 +259,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
         contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
         contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
-        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue() - 1);
+        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
         contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
         contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
         contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());

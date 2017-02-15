@@ -175,7 +175,8 @@
                 android:id="@+id/repeatView1"
                 android:layout_weight="1"
                 android:textSize="18sp"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black"
+                android:gravity="right"/>
 
             <NumberPicker
                 android:layout_width="wrap_content"
@@ -190,12 +191,13 @@
                 android:id="@+id/textView3"
                 android:layout_weight="1"
                 android:textColor="@android:color/black"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:gravity="left"/>
 
         </LinearLayout>
 
         <TextView
-            android:text="Назначить тэг"
+            android:text="Присвоить тэг"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tagTitle"

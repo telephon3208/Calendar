@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,12 +12,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,14 +28,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import masha.calendar.Filter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class MonthActivity extends AppCompatActivity {
 
@@ -281,8 +272,8 @@ public class MonthActivity extends AppCompatActivity {
       //  Log.d(TAG,"день недели первого числа месяца: " + getMinimalDaysInFirstWeek(c));
 
         int daysIn1W = 7 - weekDay + 1;             //количество дней месяца в 1 неделе(строке)
-        Log.d(TAG,"количество дней в первой неделе месяца: " + c.getMinimalDaysInFirstWeek());
 
+        //добавляем нужные линии
         if (!(weekDay == 1 && maxDay == 28)) {
             findViewById(R.id.line29).setBackgroundResource(R.color.mainColorLight);
             findViewById(R.id.line30).setBackgroundResource(R.color.mainColorLight);
@@ -322,9 +313,7 @@ public class MonthActivity extends AppCompatActivity {
         monthView.append(" " + String.format("%s", c.get(Calendar.YEAR)));  //прибавляем год к месяцу
 
         displayTime();
-
         highlightTodayButton();
-
         filter.eventsFilter(c);
         displayEvents();
         Log.d(TAG,"календарь создан");
@@ -790,7 +779,7 @@ public class MonthActivity extends AppCompatActivity {
         Log.d(TAG, "преобразовали ArrayList в массив boolean");
             //получили массив чекбоксов
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Выберите события для отображения")
+        builder.setTitle("Фильтр событий")
                 .setCancelable(false)
                 .setMultiChoiceItems(items, checkedItems,
                         new DialogInterface.OnMultiChoiceClickListener() {
@@ -877,7 +866,7 @@ public class MonthActivity extends AppCompatActivity {
             do {
                 //находим кнопку, которую надо выделить
                 b = btnSearch(cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
-                b.setBackgroundResource(R.color.event);
+                b.setBackgroundResource(R.drawable.event_background);
             } while (cursor.moveToNext());
         } else {
             Log.d(TAG, "событий для отображения не найдено");
@@ -911,8 +900,9 @@ public class MonthActivity extends AppCompatActivity {
         if (rightNow.get(Calendar.MONTH) == displayMonth.get(Calendar.MONTH) &&
                 rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
             today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
-            today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
-
+     //       today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
+            today.setBackgroundResource(R.drawable.today_background);
+            today.setText(Integer.toString(rightNow.get(Calendar.DAY_OF_MONTH)));
         }
     }
 
