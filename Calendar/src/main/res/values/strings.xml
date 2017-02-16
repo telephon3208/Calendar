@@ -16,5 +16,6 @@
         <item>каждые несколько дней</item>
     </string-array>
     <string name="title_activity_new">New</string>
+    <string name="EditEvent">Редактировать событие</string>
 
 </resources>

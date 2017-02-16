@@ -128,7 +128,7 @@
                 android:id="@+id/hourPicker"
                 android:layout_weight="1"
                 android:dividerPadding="5dp"
-                android:divider="@color/mainColorLight"/>
+                android:divider="@color/colorAccentShade"/>
 
             <NumberPicker
                 android:layout_width="wrap_content"
@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/repeatView1"
-                android:layout_weight="1"
+                android:layout_gravity="center|end"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:gravity="right"/>
@@ -181,18 +181,17 @@
             <NumberPicker
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/recurDayPicker"
-                android:layout_weight="1" />
+                android:id="@+id/recurDayPicker"/>
 
             <TextView
                 android:text="дней (дня)"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView3"
-                android:layout_weight="1"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
-                android:gravity="left"/>
+                android:gravity="left"
+                android:layout_gravity="center|start"/>
 
         </LinearLayout>
 
@@ -232,7 +231,7 @@
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:layout_margin="10dp"
-                android:background="@color/mainColorLight"
+                android:background="@color/colorAccentShade"
                 android:layout_weight="1" />
 
             <Button
@@ -240,7 +239,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/cancel"
-                android:background="@color/mainColorLight"
+                android:background="@color/colorAccentShade"
                 android:layout_weight="1"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"

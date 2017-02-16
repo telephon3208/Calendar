@@ -10,9 +10,9 @@
             android:shape="ring"
             android:useLevel="false"
             android:innerRadius="0dp"
-            android:thickness="@dimen/ring_radius">
+            android:thickness="@dimen/min_ring_radius">
 
-            <solid android:color="@color/mainColorLight"/>
+            <solid android:color="@color/colorAccentShade"/>
         </shape>
     </item>
 </layer-list>

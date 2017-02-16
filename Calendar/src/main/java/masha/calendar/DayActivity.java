@@ -1,5 +1,8 @@
 package masha.calendar;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -98,7 +104,7 @@ public class DayActivity extends AppCompatActivity {
 
     //region Все что касается меню
     //формирование меню при нажатии кнопки Меню
-   /* @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.daymenu, menu);
@@ -109,8 +115,11 @@ public class DayActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(MonthActivity.TAG,"Начало метода onOptionsItemSelected");
         switch (item.getItemId()){
-            case R.id.CreateEvent:
-                createEvent();
+            case R.id.menuItemCreateEventDayActivity:
+                createEventActivity();
+                return true;
+            case R.id.menuItemEditEventDayActivity:
+                showDialog(0); //вместо этого надо использовать DialogFragment
                 return true;
             case R.id.Settings:
 
@@ -118,10 +127,10 @@ public class DayActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    } */
+    }
     //endregion
 
-    public void createEvent() {
+    public void createEventActivity() {
         Intent intent = new Intent(DayActivity.this, EventActivity.class);
         intent.putExtra("Число", day);
         intent.putExtra("Месяц", month);
@@ -142,7 +151,7 @@ public class DayActivity extends AppCompatActivity {
 
             switch (v.getId()) {
                 case R.id.fAB:
-                    createEvent();
+                    createEventActivity();
                     break;
             }
         }
@@ -204,5 +213,69 @@ public class DayActivity extends AppCompatActivity {
 
         return cursor;
     }
+
+    //region onCreateDialog()
+   /* protected Dialog onCreateDialog(int id) {
+
+        //получили массив чекбоксов
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Фильтр событий")
+                .setCancelable(false)
+                .setMultiChoiceItems(items, checkedItems,
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which, boolean isChecked) {
+                                checkedItems[which] = isChecked;
+                            }
+                        })
+
+                // Добавляем кнопки
+                .setPositiveButton("Готово",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                try {
+                                    database = dbHelper.getWritableDatabase();
+                                    Log.d(MonthActivity.TAG, "получена копия базы данных getWritableDatabase()");
+                                }
+                                catch (SQLiteException ex){
+                                    database = dbHelper.getReadableDatabase();
+                                    Log.d(MonthActivity.TAG, "получена копия базы данных getReadableDatabase()");
+                                } catch (Exception e) {
+                                    Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
+                                }
+                                dbHelper.checkBoxWriter(database, items, checkedItems);
+                                database.close();
+                                StringBuilder state = new StringBuilder();
+                                for (int i = 0; i < items.length; i++) {
+                                    state.append("" + items[i]);
+                                    if (checkedItems[i])
+                                        state.append(" выбран\n");
+                                    else
+                                        state.append(" не выбран\n");
+                                }
+                                Toast.makeText(getApplicationContext(),
+                                        state.toString(), Toast.LENGTH_LONG)
+                                        .show();
+                                cleanColor();
+                                highlightTodayButton();
+                                displayEvents();
+                            }
+                        })
+
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                dialog.cancel();
+                            }
+                        });
+        return builder.create();
+
+    }*/
+    //endregion
 }
 

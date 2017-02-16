@@ -275,22 +275,22 @@ public class MonthActivity extends AppCompatActivity {
 
         //добавляем нужные линии
         if (!(weekDay == 1 && maxDay == 28)) {
-            findViewById(R.id.line29).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line30).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line31).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line32).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line33).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line34).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line35).setBackgroundResource(R.color.mainColorLight);
+            findViewById(R.id.line29).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line30).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line31).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line32).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line33).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line34).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line35).setBackgroundResource(R.color.colorPrimaryShade);
         }
         if ((weekDay == 6 && maxDay == 31) || (weekDay == 7 && maxDay >= 30)) {
-            findViewById(R.id.line36).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line37).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line38).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line39).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line40).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line41).setBackgroundResource(R.color.mainColorLight);
-            findViewById(R.id.line42).setBackgroundResource(R.color.mainColorLight);
+            findViewById(R.id.line36).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line37).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line38).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line39).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line40).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line41).setBackgroundResource(R.color.colorPrimaryShade);
+            findViewById(R.id.line42).setBackgroundResource(R.color.colorPrimaryShade);
         }
 
         for (int i = 0, j = daysIn1W + 1; i < 7; i++, j++) { //переименовываем кнопки чтобы
@@ -900,7 +900,7 @@ public class MonthActivity extends AppCompatActivity {
         if (rightNow.get(Calendar.MONTH) == displayMonth.get(Calendar.MONTH) &&
                 rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
             today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
-     //       today.setBackgroundResource(R.color.mainColorLight);  //выделяем сегодняшний день
+       //выделяем сегодняшний день
             today.setBackgroundResource(R.drawable.today_background);
             today.setText(Integer.toString(rightNow.get(Calendar.DAY_OF_MONTH)));
         }

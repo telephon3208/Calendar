@@ -29,7 +29,7 @@
         tools:context="masha.calendar.DayActivity"
         tools:showIn="@layout/activity_day"
         tools:listitem="@layout/event_list_item"
-        android:divider="@color/mainColorLight">
+        android:divider="@color/colorAccentShade">
 
     </ListView>
 

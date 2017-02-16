@@ -11,7 +11,7 @@
             android:innerRadius="@dimen/ring_radius"
             android:shape="ring"
             android:thickness="1dp">
-            <solid android:color="@color/mainColorLight"/>
+            <solid android:color="@color/colorAccentShade"/>
         </shape>
     </item>
 </layer-list>

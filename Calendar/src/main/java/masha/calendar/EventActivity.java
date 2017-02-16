@@ -175,7 +175,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    //region OnClickListener
+    //region OnClickListener для всех кнопок
     @Override
     public void onClick(View v) {
 
@@ -196,7 +196,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                     createEvent();
                     onBackPressed();
                 } else {
-                    editEvent();
+                    editEvent(intent.getIntExtra("Строка из MonthEvent", 0));
                     onBackPressed();
                 }
                 break;
@@ -244,7 +244,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    void editEvent() {
+    void editEvent(int id) {
         try {
             database = dbHelper.getWritableDatabase();
         }
@@ -279,7 +279,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
                 null,
                 "_id = ?", //условие для выборки
-                new String [] {String.format("%s", intent.getIntExtra("Строка из MonthEvent", 0))},
+                new String [] {String.format("%s", id)},
                 null,
                 null,
                 null);

@@ -15,7 +15,7 @@ import masha.calendar.MonthActivity;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 24;
+    public static final int DATABASE_VERSION = 26;
     public static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE_EVENTS = "events";
     public static final String TABLE_MONTH_EVENTS = "monthevents";
@@ -87,43 +87,12 @@ public class DBHelper extends SQLiteOpenHelper {
    //     MonthActivity.tags.add("Государственные праздники");
         addBaseEvents(db);
 
-        //тестовый блок событий
-        ContentValues contentValues = new ContentValues();
-        String title[] = {
-                "Ежемесячное событие",
-                "Каждая пятница",
-                "1 марта неповторяющееся событие",
-                "Сережина ночная смена"};
-        int date[] = { 15, 12, 1, 23};
-        int month[] = { 0, 7, 2, 0};
-        int year[] = { 1988, 2016, 2017, 2017};
-        int recur_type[] = { 2, 3, 0, 4};
-        int recur_days[] = { 0, 7, 0, 8};
-        int all_day[] = { 1, 1, 1, 1 };
-        String tags[] = {
-                "test event",
-                "test event",
-                "test event",
-                "test event"};
-
-        // заполним таблицу
-        for (int i = 0; i < 4; i++) {
-            contentValues.put("title", title[i]);
-            contentValues.put("date", date[i]);
-            contentValues.put("month", month[i]);
-            contentValues.put("year", year[i]);
-            contentValues.put("recur_type", recur_type[i]);
-            contentValues.put("recur_days", recur_days[i]);
-            contentValues.put("all_day", all_day[i]);
-            contentValues.put("tag", tags[i]);
-            db.insert(TABLE_EVENTS, null, contentValues);
-
-        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists " + TABLE_EVENTS);
+        db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
         onCreate(db);
     }
 
