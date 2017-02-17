@@ -916,11 +916,7 @@ public class MonthActivity extends AppCompatActivity {
 
     }
 
-  /*  public void createDialogFragment() {
 
-        new SelectEventFragment().show(getSupportFragmentManager(),
-                "editEvent");
-    }*/
 
 
 
