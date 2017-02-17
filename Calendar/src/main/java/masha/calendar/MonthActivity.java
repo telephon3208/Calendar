@@ -3,6 +3,7 @@ package masha.calendar;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,7 +40,7 @@ public class MonthActivity extends AppCompatActivity {
     TextView monthView, timeView, textView;
     AlertDialog.Builder ad;
     Context context;
-    ListView listView1;
+    ListView listView2;
     TableRow week1, week2, week3, week4, week5, week6;
 
     Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14;
@@ -63,6 +64,9 @@ public class MonthActivity extends AppCompatActivity {
     SQLiteDatabase database;
     static DBHelper dbHelper;
     Filter filter;
+    DialogFragment filterDialog, editDialog;
+
+
     //endregion
 
     @Override
@@ -73,8 +77,6 @@ public class MonthActivity extends AppCompatActivity {
         //region findViewById
         monthView = (TextView) findViewById(R.id.monthView);
         timeView = (TextView) findViewById(R.id.timeView);
-        listView1 = (ListView) findViewById(R.id.listView1);
-//        textView = (TextView) findViewById(R.id.textView);
 
         week1 = (TableRow) findViewById(R.id.week1);
         week2 = (TableRow) findViewById(R.id.week2);
@@ -179,6 +181,7 @@ public class MonthActivity extends AppCompatActivity {
         w6[6].setOnClickListener(buttonsListener);
         button1.setOnClickListener(testButtonsListener);
         button2.setOnClickListener(testButtonsListener);
+
         //endregion
 
         //region Инициализация переменных
@@ -186,6 +189,8 @@ public class MonthActivity extends AppCompatActivity {
         displayMonth = (Calendar) rightNow.clone();
         dbHelper = new DBHelper(this);
         filter = new Filter();
+        filterDialog = new FilterDialogFragment();
+        editDialog = new EditDialogFragment();
 
         //endregion
 
@@ -244,8 +249,6 @@ public class MonthActivity extends AppCompatActivity {
         });
         t.start();
         //endregion
-
-
 
     }
 
@@ -432,7 +435,7 @@ public class MonthActivity extends AppCompatActivity {
         }
         database.delete(DBHelper.TABLE_MONTH_EVENTS, null, null);
 
-        database.close();
+ //       database.close();
     }
 
     int lastDayOfMonth(Calendar c) {
@@ -466,12 +469,17 @@ public class MonthActivity extends AppCompatActivity {
 
                 return true;
             case R.id.filter:
-                showDialog(0); //вместо этого надо использовать DialogFragment
+                filterDialog.show(getFragmentManager(), "filterDialog");
+                return true;
+            case R.id.editMenuItem:
+                editDialog.show(getFragmentManager(), "editDialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     // отображаем диалоговое окно для выбора даты
     public void setDate(View v) {
@@ -807,7 +815,7 @@ public class MonthActivity extends AppCompatActivity {
                                     Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
                                 }
                                 dbHelper.checkBoxWriter(database, items, checkedItems);
-                                database.close();
+                            //    database.close();
                                 StringBuilder state = new StringBuilder();
                                 for (int i = 0; i < items.length; i++) {
                                     state.append("" + items[i]);
@@ -872,7 +880,7 @@ public class MonthActivity extends AppCompatActivity {
             Log.d(TAG, "событий для отображения не найдено");
         }
         cursor.close();
-        database.close();
+  //      database.close();
     }
 
     void cleanColor() {
@@ -904,8 +912,15 @@ public class MonthActivity extends AppCompatActivity {
             today.setBackgroundResource(R.drawable.today_background);
             today.setText(Integer.toString(rightNow.get(Calendar.DAY_OF_MONTH)));
         }
+
+
     }
 
+  /*  public void createDialogFragment() {
+
+        new SelectEventFragment().show(getSupportFragmentManager(),
+                "editEvent");
+    }*/
 
 
 
@@ -921,25 +936,7 @@ public class MonthActivity extends AppCompatActivity {
 
 
 
-/*    void drawCircle(Button b) {
-        Canvas canvas = new Canvas();
-        float w, h, cx, cy, radius;
-        w = b.getWidth();
-        h = b.getHeight();
-        cx = w / 2;
-        cy = h / 2;
 
-        if (w > h) {
-            radius = h / 4;
-        } else {
-            radius = w / 4;
-        }
 
-        Paint paint = new Paint();
-        paint.setColor(Color.parseColor("#ff0303"));
-        paint.setStyle(Paint.Style.FILL);
-
-        canvas.drawCircle(cx, cy, radius, paint);
-    } */
 
 }

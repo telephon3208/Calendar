@@ -134,24 +134,30 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                     null,
                     null,
                     null);
-            cursor.moveToFirst();
+            getCursorDate(cursor);
 
-            eventName.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TITLE)));
-            eventText.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION)));
-            tagView.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TAG)));
-            day = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE));
-            month = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH));
-            year = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR));
-            hour = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_HOUR));
-            minute = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MINUTE));
-            if (cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ALL_DAY)) == 1) {
-                allDay.setChecked(true);
-                timeLayout.setVisibility(View.GONE);
-                timeView.setVisibility(View.GONE);
+        } else if (intent.hasExtra("Строка из Event")) {
+            //режим редактирования события
+            createEvent = false;
+            int id = intent.getIntExtra("Строка из Event", 0);
+
+            try {
+                database = dbHelper.getWritableDatabase();
             }
-            recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
-            if (recurType <= 3) recurLayout.setVisibility(View.GONE);
-            recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
+            catch (SQLiteException ex){
+                database = dbHelper.getReadableDatabase();
+            } catch (Exception e) {
+                Log.d(MonthActivity.TAG,"Ошибка чтения БД");
+            }
+
+            Cursor cursor = database.query(DBHelper.TABLE_EVENTS,
+                    null,
+                    "_id = ?", //условие для выборки
+                    new String [] {String.format("%s", id)},
+                    null,
+                    null,
+                    null);
+            getCursorDate(cursor);
 
         } else {
             //режим добавления события
@@ -328,4 +334,26 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 }
             };
     //endregion
+
+    //получение данных из курсора
+    void getCursorDate(Cursor cursor) {
+        cursor.moveToFirst();
+
+        eventName.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TITLE)));
+        eventText.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION)));
+        tagView.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TAG)));
+        day = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE));
+        month = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH));
+        year = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR));
+        hour = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_HOUR));
+        minute = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MINUTE));
+        if (cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ALL_DAY)) == 1) {
+            allDay.setChecked(true);
+            timeLayout.setVisibility(View.GONE);
+            timeView.setVisibility(View.GONE);
+        }
+        recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
+        if (recurType <= 3) recurLayout.setVisibility(View.GONE);
+        recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
+    }
 }

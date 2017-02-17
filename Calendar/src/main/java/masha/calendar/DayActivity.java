@@ -1,17 +1,12 @@
 package masha.calendar;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,7 +89,7 @@ public class DayActivity extends AppCompatActivity {
         //endregion
 
         CursorAdapter adapter = new SimpleCursorAdapter(this,
-                R.layout.event_list_item, dayEventsGet(),
+                R.layout.event_list_item, getDayEvents(),
                 new String[] { "hour", "minute", "title", "description" },
                 new int[] { R.id.hour, R.id.minute, R.id.title, R.id.description }, 0);
         listEvents.setAdapter(adapter);
@@ -193,7 +187,7 @@ public class DayActivity extends AppCompatActivity {
     };
     //endregion
 
-    Cursor dayEventsGet() {
+    Cursor getDayEvents() {
         try {
             database = dbHelper.getWritableDatabase();
         }

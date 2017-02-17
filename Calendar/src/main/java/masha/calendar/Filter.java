@@ -95,8 +95,8 @@ public class Filter {
         processEntries(cursor, c);
 
         cursor.close();
-        dbHelper.close();
-        database.close();
+    //    dbHelper.close();
+   //     database.close();
     }
 
     void processEntries(Cursor cursor, Calendar c) {
