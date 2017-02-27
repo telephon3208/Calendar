@@ -2,12 +2,10 @@ package masha.calendar;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import masha.calendar.MonthActivity;
+import masha.calendar.MonthActivityPack.MonthActivity;
 
 /**
  * Created by Маша on 25.01.2017.
@@ -15,7 +13,7 @@ import masha.calendar.MonthActivity;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 26;
+    public static final int DATABASE_VERSION = 27;
     public static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE_EVENTS = "events";
     public static final String TABLE_MONTH_EVENTS = "monthevents";
@@ -41,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.d(MonthActivity.TAG, "конструктор DBHelper");
+   //     Log.d(MonthActivity.TAG, "конструктор DBHelper");
     }
 
     @Override
@@ -112,8 +110,8 @@ public class DBHelper extends SQLiteOpenHelper {
         int recur_type[] = { 1, 1, 1, 1, 1, 1, 1 };
         int all_day[] = { 1, 1, 1, 1, 1, 1, 1 };
         String tags[] = {
-                "Государственные праздники",
-                "Государственные праздники",
+                "Мужской праздник",
+                "Женский праздник",
                 "Государственные праздники",
                 "Государственные праздники",
                 "Государственные праздники",

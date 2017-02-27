@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class Dialog1 extends DialogFragment implements OnClickListener {
 
@@ -23,9 +24,6 @@ public class Dialog1 extends DialogFragment implements OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +42,12 @@ public class Dialog1 extends DialogFragment implements OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(LOG_TAG, "нажат пункт: " + position);
+                Log.d(LOG_TAG, "id: " + id);
+                Log.d(LOG_TAG, "название: " +
+                        ((TextView) view.findViewById(R.id.textView1)).getText());
+                Log.d(LOG_TAG, "parent: " + parent.getItemAtPosition(position));
+      //          ((ListView) parent).getItemAtPosition(position);
+                Log.d(LOG_TAG, "parent: " + ((ListView) parent).getItemAtPosition(position));
             }
         });
         return v;

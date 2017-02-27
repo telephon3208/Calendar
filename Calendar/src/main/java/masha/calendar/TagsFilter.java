@@ -1,13 +1,13 @@
 package masha.calendar;
 
-import masha.calendar.MonthActivity.*;
+import masha.calendar.MonthActivityPack.MonthActivity;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by Маша on 06.02.2017.

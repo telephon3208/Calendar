@@ -12,13 +12,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import masha.calendar.MonthActivityPack.MonthActivity;
 
 public class EventActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -113,10 +113,10 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         //region Получение intent и присвоение значений
         intent = getIntent();
 
-        if (intent.hasExtra("Строка из MonthEvent")) {
+        if (intent.hasExtra("Строка из MonthEvents")) {
             //режим редактирования события
             createEvent = false;
-            int id = intent.getIntExtra("Строка из MonthEvent", 0);
+            long id = intent.getLongExtra("Строка из MonthEvents", 0);
 
             try {
                 database = dbHelper.getWritableDatabase();
@@ -136,10 +136,10 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                     null);
             getCursorDate(cursor);
 
-        } else if (intent.hasExtra("Строка из Event")) {
+        } else if (intent.hasExtra("Строка из Events")) {
             //режим редактирования события
             createEvent = false;
-            int id = intent.getIntExtra("Строка из Event", 0);
+            long id = intent.getLongExtra("Строка из Events", 0);
 
             try {
                 database = dbHelper.getWritableDatabase();
@@ -157,7 +157,12 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                     null,
                     null,
                     null);
-            getCursorDate(cursor);
+            if (cursor.moveToFirst()) {
+                getCursorDate(cursor);
+            } else {
+                Log.d(MonthActivity.TAG,"Курсор пустой");
+            }
+
 
         } else {
             //режим добавления события

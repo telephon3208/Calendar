@@ -22,6 +22,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import masha.calendar.MonthActivityPack.MonthActivity;
+
 public class DayActivity extends AppCompatActivity {
 
     TextView dateView;
@@ -89,7 +91,7 @@ public class DayActivity extends AppCompatActivity {
         //endregion
 
         CursorAdapter adapter = new SimpleCursorAdapter(this,
-                R.layout.event_list_item, getDayEvents(),
+                R.layout.day_activity_list_item, getDayEvents(),
                 new String[] { "hour", "minute", "title", "description" },
                 new int[] { R.id.hour, R.id.minute, R.id.title, R.id.description }, 0);
         listEvents.setAdapter(adapter);
@@ -180,7 +182,7 @@ public class DayActivity extends AppCompatActivity {
             cursor.moveToFirst();
 
             Intent intent = new Intent(DayActivity.this, EventActivity.class);
-            intent.putExtra("Строка из MonthEvent", cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ID)));
+            intent.putExtra("Строка из MonthEvents", cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ID)));
             startActivity(intent);
             Log.d(MonthActivity.TAG,"Запуск EventActivity");
         }

@@ -1,12 +1,12 @@
-package masha.calendar;
+package masha.calendar.MonthActivityPack;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,10 +27,13 @@ import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+
+import masha.calendar.DBHelper;
+import masha.calendar.DayActivity;
+import masha.calendar.Filter;
+import masha.calendar.R;
 
 public class MonthActivity extends AppCompatActivity {
 
@@ -57,12 +60,10 @@ public class MonthActivity extends AppCompatActivity {
 
     public static Calendar rightNow, displayMonth;
 
-    TimePickerDialog.OnTimeSetListener t;
-    DatePickerDialog.OnDateSetListener d;
 
     public final static String TAG = "MyLogs";
     SQLiteDatabase database;
-    static DBHelper dbHelper;
+    public static DBHelper dbHelper;
     Filter filter;
     DialogFragment filterDialog, editDialog;
 
@@ -133,7 +134,7 @@ public class MonthActivity extends AppCompatActivity {
         button2 = (Button) findViewById(R.id.button2);
         //endregion
 
-        //region SetOnClickListener
+        //region SetListeners
         arrowLeft.setOnClickListener(arrowsListener);
         arrowRight.setOnClickListener(arrowsListener);
 
@@ -189,37 +190,14 @@ public class MonthActivity extends AppCompatActivity {
         displayMonth = (Calendar) rightNow.clone();
         dbHelper = new DBHelper(this);
         filter = new Filter();
-        filterDialog = new FilterDialogFragment();
+   //     filterDialog = new FilterDialogFragment();
         editDialog = new EditDialogFragment();
 
         //endregion
 
         createCalendar(rightNow);              //создаем календарь
 
-        //region Listener DatePickerDialog и TimePickerDialog
-        // установка обработчика выбора даты
-        d = new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                rightNow.set(Calendar.YEAR, year);
-                rightNow.set(Calendar.MONTH, monthOfYear);
-                rightNow.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                createCalendar(rightNow);            //создаем календарь
-                displayMonth.set(rightNow.get(Calendar.YEAR), rightNow.get(Calendar.MONTH),
-                        rightNow.get(Calendar.DAY_OF_MONTH));
-            }
-        };
-
-
-        // установка обработчика выбора времени
-        t = new TimePickerDialog.OnTimeSetListener() {
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                rightNow.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                rightNow.set(Calendar.MINUTE, minute);
-                displayTime();
-            }
-        };
-        //endregion
 
         //region Поток, отвечающий за отображение времени
         //создаем handler для изменения времени
@@ -316,9 +294,9 @@ public class MonthActivity extends AppCompatActivity {
         monthView.append(" " + String.format("%s", c.get(Calendar.YEAR)));  //прибавляем год к месяцу
 
         displayTime();
-        highlightTodayButton();
         filter.eventsFilter(c);
         displayEvents();
+
         Log.d(TAG,"календарь создан");
     }
     public Button btnSearch(int day) {
@@ -449,10 +427,12 @@ public class MonthActivity extends AppCompatActivity {
 
     //region Все что касается меню
     //формирование меню при нажатии кнопки Меню
+    Menu globalMenu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mainmenu, menu);
+        globalMenu = menu;
         return true;
     }
 
@@ -460,7 +440,7 @@ public class MonthActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.SetDate:
-                setDate(findViewById(R.id.SetDate));
+                setDate(rightNow);
                 return true;
             case R.id.SetTime:
                 setTime(findViewById(R.id.SetTime));
@@ -469,25 +449,54 @@ public class MonthActivity extends AppCompatActivity {
 
                 return true;
             case R.id.filter:
-                filterDialog.show(getFragmentManager(), "filterDialog");
+                showDialog("filterDialog");
+                Log.d(MonthActivity.TAG,"перед displayEvents()");
+                displayEvents();
                 return true;
             case R.id.editMenuItem:
-                editDialog.show(getFragmentManager(), "editDialog");
+                showDialog("editDialog");
+                displayEvents();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    public void showDialog(String tag) {
 
+        //списано с Android Guideline
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(tag);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = null;
+        switch (tag) {
+            case "filterDialog" :
+                newFragment = FilterDialogFragment.newInstance(0);
+                break;
+            case "editDialog" :
+                newFragment = EditDialogFragment.newInstance(0);
+                break;
+        }
+
+        newFragment.show(ft, tag);
+    }
 
     // отображаем диалоговое окно для выбора даты
-    public void setDate(View v) {
-        new DatePickerDialog(this, d,
-                rightNow.get(Calendar.YEAR),
-                rightNow.get(Calendar.MONTH),
-                rightNow.get(Calendar.DAY_OF_MONTH))
-                .show();
+    public void setDate(Calendar c) {
+        DatePickerDialog dialog = new DatePickerDialog(this, d,
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH));
+   //     ((DatePicker) dialog.getDatePicker()).setId(R.id.datePicker1);
+       dialog.show();
     }
 
     // отображаем диалоговое окно для выбора времени
@@ -535,16 +544,47 @@ public class MonthActivity extends AppCompatActivity {
     };
     //endregion
 
+    //region Listener DatePickerDialog и TimePickerDialog
+    // установка обработчика выбора даты
+    DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            rightNow.set(Calendar.YEAR, year);
+            rightNow.set(Calendar.MONTH, monthOfYear);
+            rightNow.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            createCalendar(rightNow);            //создаем календарь
+            displayMonth.set(rightNow.get(Calendar.YEAR), rightNow.get(Calendar.MONTH),
+                    rightNow.get(Calendar.DAY_OF_MONTH));
+        }
+    };
+
+    // установка обработчика выбора времени
+    TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            rightNow.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            rightNow.set(Calendar.MINUTE, minute);
+            displayTime();
+        }
+    };
+    //endregion
+
     //region ButtonsListener
     View.OnClickListener buttonsListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button b = (Button) v;
             if (!b.getText().equals("")) {
-    //            Intent intent = new Intent(MonthActivity.this, DayActivity.class);
                 Intent intent = new Intent(MonthActivity.this, DayActivity.class);
                 intent.putExtra("Число", b.getText());
                 switch (v.getId()) {
+                    case R.id.monthView:
+          //              setDate(findViewById(R.id.SetDate));
+                        new DatePickerDialog(MonthActivity.this, d,
+                                displayMonth.get(Calendar.YEAR),
+                                displayMonth.get(Calendar.MONTH),
+                                displayMonth.get(Calendar.DAY_OF_MONTH))
+                                .show();
+                        break;
                     case R.id.b1:
                         intent.putExtra("День недели", "Пн");
                         break;
@@ -769,7 +809,7 @@ public class MonthActivity extends AppCompatActivity {
     //endregion
 
     //region onCreateDialog()
-    protected Dialog onCreateDialog(int id) {
+   /* protected Dialog onCreateDialog(int id) {
 
         TagsFilter tagsFilter = new TagsFilter();
         ArrayList<String> tags = tagsFilter.tagsFilter();
@@ -843,11 +883,11 @@ public class MonthActivity extends AppCompatActivity {
                         });
         return builder.create();
 
-        }
+        }*/
     //endregion
 
-    void displayEvents() {
-
+    public void displayEvents() {
+        cleanColor();
         try {
             database = dbHelper.getWritableDatabase();
             Log.d(TAG, "получена копия базы данных getWritableDatabase()");
@@ -881,6 +921,7 @@ public class MonthActivity extends AppCompatActivity {
         }
         cursor.close();
   //      database.close();
+        highlightTodayButton();
     }
 
     void cleanColor() {

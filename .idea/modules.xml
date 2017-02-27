@@ -5,7 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Calendar/Calendar.iml" filepath="$PROJECT_DIR$/Calendar/Calendar.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyApplication2.iml" filepath="$PROJECT_DIR$/MyApplication2.iml" />
       <module fileurl="file://$PROJECT_DIR$/dialogsTest/dialogsTest.iml" filepath="$PROJECT_DIR$/dialogsTest/dialogsTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/listAdaptersTest/listAdaptersTest.iml" filepath="$PROJECT_DIR$/listAdaptersTest/listAdaptersTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/menuTest/menuTest.iml" filepath="$PROJECT_DIR$/menuTest/menuTest.iml" />
     </modules>
   </component>
 </project>

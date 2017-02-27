@@ -1,0 +1,59 @@
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    tools:context="masha.calendar.MonthActivityPack.MonthActivity"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+        <include layout="@layout/dialog_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom|end">
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="13dp"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="1dp"
+                android:text="Редактировать"
+                android:background="@color/colorAccentShade">
+            </Button>
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="1dp"
+                android:textSize="@dimen/textSizeInDialogs"
+                android:text="Удалить"
+                android:background="@color/colorAccentShade">
+            </Button>
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="1dp"
+                android:textSize="@dimen/textSizeInDialogs"
+                android:text="Отмена"
+                android:background="@color/colorAccentShade">
+            </Button>
+
+        </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

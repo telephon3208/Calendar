@@ -5,14 +5,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.widget.Button;
-import masha.calendar.DBHelper;
-import masha.calendar.MonthActivity;
+
+import masha.calendar.MonthActivityPack.MonthActivity;
 import java.util.Calendar;
-import java.util.ArrayList;
 
 import static masha.calendar.DBHelper.TABLE_MONTH_EVENTS;
 
@@ -28,7 +24,7 @@ public class Filter {
 
     ContentValues contentValues;
 
-    void eventsFilter(Calendar c) {
+    public void eventsFilter(Calendar c) {
 
         Log.d(MonthActivity.TAG, "начало EventsFilter()");
         dbHelper = MonthActivity.dbHelper;

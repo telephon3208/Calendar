@@ -1,4 +1,4 @@
-package masha.calendar;
+package masha.calendar.MonthActivityPack;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,22 +7,27 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import masha.calendar.DBHelper;
+import masha.calendar.R;
+
 /**
  * Created by Маша on 17.02.2017.
  */
 
-public class CustomCursorAdapter extends CursorAdapter {
+public class EditDialogAdapter extends CursorAdapter {
 
     View v = null;
+ //   ListView listView;
 
-    public CustomCursorAdapter(Context context, Cursor c, int flags) {
+
+    public EditDialogAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
     //Makes a new view to hold the data pointed to by cursor
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        v = View.inflate(context, R.layout.event_list_item2, null);
+        v = View.inflate(context, R.layout.edit_list_item, null);
         return v;
     }
 
@@ -32,16 +37,15 @@ public class CustomCursorAdapter extends CursorAdapter {
         String title = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TITLE));
         ((TextView) view.findViewById(R.id.title)).setText(title);
         String description = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION));
-      //  if ()
-      //      view.findViewById(R.id.description).setVisibility(View.GONE);
-      //  else
+//        if (description.isEmpty())
+  //          view.findViewById(R.id.description).setVisibility(View.GONE);
+  //      else
         ((TextView) view.findViewById(R.id.description)).setText(description);
         int date = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE));
         ((TextView) view.findViewById(R.id.date)).setText(Integer.toString(date));
         int year = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR));
         ((TextView) view.findViewById(R.id.year)).setText(Integer.toString(year));
 
-        String month;
         switch (cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH))) {
             case 0:
                 ((TextView) view.findViewById(R.id.month)).setText("января");
@@ -81,4 +85,5 @@ public class CustomCursorAdapter extends CursorAdapter {
                 break;
         }
     }
+
 }
