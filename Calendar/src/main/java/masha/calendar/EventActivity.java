@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -70,6 +71,10 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         allDay.setOnClickListener(this);
         saveBtn.setOnClickListener(this);
         cancel.setOnClickListener(this);
+        recurSpinner.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.event_activity_spinner_item,
+                new String[] {"не повторять", "каждый год", "каждый месяц", "каждую неделю",
+        "каждые несколько дней"}));
         recurSpinner.setOnItemSelectedListener(recurSpinnerListener);
 
         //endregion
@@ -202,8 +207,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
         //endregion
 
-
-
     }
 
     //region OnClickListener для всех кнопок
@@ -292,7 +295,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
         contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
         contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
-
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
         switch (recurType) {
             case 0:
@@ -315,7 +317,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         //строка из TableMonthEvents
-        Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
+        Cursor cursorTME = database.query(DBHelper.TABLE_EVENTS,
                 null,
                 "_id = ?", //условие для выборки
                 new String [] {String.format("%s", id)},
@@ -323,49 +325,44 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 null,
                 null);
         cursorTME.moveToFirst();
-        //находим originalID
-        int originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
 
         database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
-                new String[] {String.format("%s", originalID)});
+                new String[] {String.format("%s", id)});
     }
 
     //region Listener для spinner
     AdapterView.OnItemSelectedListener recurSpinnerListener =
-            new AdapterView.OnItemSelectedListener() {
+    new AdapterView.OnItemSelectedListener() {
 
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    switch (recurSpinner.getSelectedItemPosition()) {
-                        case 1: //повторять каждый год
-                            recurType = 1;
-                            recurLayout.setVisibility(View.GONE);
-                            break;
-                        case 2: //повторять каждый месяц
-                            recurType = 2;
-                            recurLayout.setVisibility(View.GONE);
-                            break;
-                        case 3: //повторять каждую неделю
-                            recurType = 3;
-                            recurLayout.setVisibility(View.GONE);
-                            recurDays = 7;
-                            break;
-                        case 4: //повторять каждые несколько дней
-                            recurLayout.setVisibility(View.VISIBLE);
-                            recurType = 4;
-                            break;
-                        default: //не повторять
-                            recurLayout.setVisibility(View.GONE);
-                            recurDays = 0;
-                            recurType = 0;
-                    }
-                }
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            recurType = position;
+            switch (position) {
+                case 1: //повторять каждый год
+                    recurLayout.setVisibility(View.GONE);
+                    break;
+                case 2: //повторять каждый месяц
+                    recurLayout.setVisibility(View.GONE);
+                    break;
+                case 3: //повторять каждую неделю
+                    recurLayout.setVisibility(View.GONE);
+                    recurDays = 7;
+                    break;
+                case 4: //повторять каждые несколько дней
+                    recurLayout.setVisibility(View.VISIBLE);
+                    break;
+                default: //не повторять
+                    recurLayout.setVisibility(View.GONE);
+                    recurDays = 0;
+                    recurType = 0;
+            }
+        }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            };
+        }
+    };
     //endregion
 
     //получение данных из курсора
@@ -386,7 +383,10 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             timeView.setVisibility(View.GONE);
         }
         recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
-        if (recurType <= 3) recurLayout.setVisibility(View.GONE);
+        if (recurType <= 3) {
+            recurLayout.setVisibility(View.GONE);
+        }
+        recurSpinner.setSelection(recurType);
         recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
     }
 

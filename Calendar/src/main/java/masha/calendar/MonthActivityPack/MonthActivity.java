@@ -180,6 +180,9 @@ public class MonthActivity extends AppCompatActivity {
         w6[4].setOnClickListener(buttonsListener);
         w6[5].setOnClickListener(buttonsListener);
         w6[6].setOnClickListener(buttonsListener);
+
+        monthView.setOnClickListener(monthViewListener);
+
         button1.setOnClickListener(testButtonsListener);
         button2.setOnClickListener(testButtonsListener);
 
@@ -196,8 +199,6 @@ public class MonthActivity extends AppCompatActivity {
         //endregion
 
         createCalendar(rightNow);              //создаем календарь
-
-
 
         //region Поток, отвечающий за отображение времени
         //создаем handler для изменения времени
@@ -441,7 +442,7 @@ public class MonthActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.SetDate:
-                setDate(rightNow);
+                setDate(rightNow, true);
                 return true;
             case R.id.SetTime:
                 setTime(findViewById(R.id.SetTime));
@@ -491,13 +492,24 @@ public class MonthActivity extends AppCompatActivity {
     }
 
     // отображаем диалоговое окно для выбора даты
-    public void setDate(Calendar c) {
-        DatePickerDialog dialog = new DatePickerDialog(this, d,
-                c.get(Calendar.YEAR),
-                c.get(Calendar.MONTH),
-                c.get(Calendar.DAY_OF_MONTH));
-   //     ((DatePicker) dialog.getDatePicker()).setId(R.id.datePicker1);
-       dialog.show();
+    public void setDate(Calendar c, boolean isRightNow) {
+        DatePickerDialog dialog;
+        if (isRightNow) {
+            dialog = new DatePickerDialog(this, d,
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH));
+
+            dialog.show();
+        } else {
+            dialog = new DatePickerDialog(this, d1,
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH));
+
+            dialog.show();
+        }
+
     }
 
     // отображаем диалоговое окно для выбора времени
@@ -567,9 +579,31 @@ public class MonthActivity extends AppCompatActivity {
             displayTime();
         }
     };
+
+    DatePickerDialog.OnDateSetListener d1 = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year,
+                              int monthOfYear, int dayOfMonth) {
+            displayMonth.set(Calendar.YEAR, year);
+            displayMonth.set(Calendar.MONTH, monthOfYear);
+            displayMonth.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            createCalendar(displayMonth);            //создаем календарь
+        }
+    };
     //endregion
 
-    //region ButtonsListener
+    //region monthView и ButtonsListener
+    View.OnClickListener monthViewListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.monthView:
+                    setDate(displayMonth, false);
+                    break;
+            }
+        }
+    };
+
     View.OnClickListener buttonsListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -578,14 +612,6 @@ public class MonthActivity extends AppCompatActivity {
                 Intent intent = new Intent(MonthActivity.this, DayActivity.class);
                 intent.putExtra("Число", b.getText());
                 switch (v.getId()) {
-                    case R.id.monthView:
-          //              setDate(findViewById(R.id.SetDate));
-                        new DatePickerDialog(MonthActivity.this, d,
-                                displayMonth.get(Calendar.YEAR),
-                                displayMonth.get(Calendar.MONTH),
-                                displayMonth.get(Calendar.DAY_OF_MONTH))
-                                .show();
-                        break;
                     case R.id.b1:
                         intent.putExtra("День недели", "Пн");
                         break;

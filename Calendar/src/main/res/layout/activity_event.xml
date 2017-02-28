@@ -158,7 +158,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner"
             android:entries="@array/recurList"
-            android:minHeight="20dp"/>
+            android:minHeight="20dp"
+            android:layout_margin="20dp"
+            android:padding="5dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
