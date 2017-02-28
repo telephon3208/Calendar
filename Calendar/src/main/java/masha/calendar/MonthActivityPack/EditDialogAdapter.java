@@ -16,9 +16,6 @@ import masha.calendar.R;
 
 public class EditDialogAdapter extends CursorAdapter {
 
-    View v = null;
- //   ListView listView;
-
 
     public EditDialogAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -27,7 +24,7 @@ public class EditDialogAdapter extends CursorAdapter {
     //Makes a new view to hold the data pointed to by cursor
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        v = View.inflate(context, R.layout.edit_list_item, null);
+        View v = View.inflate(context, R.layout.edit_list_item, null);
         return v;
     }
 

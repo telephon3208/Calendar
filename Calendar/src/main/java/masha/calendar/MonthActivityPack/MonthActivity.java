@@ -747,6 +747,8 @@ public class MonthActivity extends AppCompatActivity {
                         int dateIndex = cursor.getColumnIndex(DBHelper.KEY_DATE);
                         int monthIndex = cursor.getColumnIndex(DBHelper.KEY_MONTH);
                         int yearIndex = cursor.getColumnIndex(DBHelper.KEY_YEAR);
+                        int hourIndex = cursor.getColumnIndex(DBHelper.KEY_HOUR);
+                        int minuteIndex = cursor.getColumnIndex(DBHelper.KEY_MINUTE);
                         int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
                         int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
                         int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
@@ -759,6 +761,8 @@ public class MonthActivity extends AppCompatActivity {
                                     ", date = " + cursor.getString(dateIndex) +
                                     ", month = " + cursor.getString(monthIndex) +
                                     ", year = " + cursor.getString(yearIndex) +
+                                    ", hour = " + cursor.getString(hourIndex) +
+                                    ", minute = " + cursor.getString(minuteIndex) +
                                     ", recur_type = " + cursor.getString(recurTypeIndex) +
                                     ", recur_days = " + cursor.getString(recurDaysIndex) +
                                     ", tag = " + cursor.getString(tagIndex) +

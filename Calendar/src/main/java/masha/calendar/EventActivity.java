@@ -272,17 +272,25 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
         contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
         contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
-        contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
-        contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
+
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-        if (recurType == 0) {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
-        } else {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+        switch (recurType) {
+            case 0:
+                contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
+                break;
+            default:
+                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
         }
 
-        if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
-        else contentValues.put(DBHelper.KEY_ALL_DAY, 0);
+        if (allDay.isChecked()) {
+            contentValues.put(DBHelper.KEY_ALL_DAY, 1);
+        }
+        else {
+            contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
+            contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
+            contentValues.put(DBHelper.KEY_ALL_DAY, 0);
+        }
+
         contentValues.put(DBHelper.KEY_TAG, tagView.getText().toString());
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 

@@ -2,6 +2,7 @@ package masha.calendar;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -89,6 +90,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+/*        Cursor cursorEventsTable = db.query(TABLE_EVENTS, null, null, null, null, null, null);
+        Cursor cursorMonthEventsTable = db.query(TABLE_MONTH_EVENTS, null, null, null, null, null, null);
+        ContentValues contentValues = new ContentValues();
+
+        // заполним таблицу
+        for (int i = 0; i < 7; i++) {
+            contentValues.put("title", title[i]);
+            contentValues.put("date", date[i]);
+            contentValues.put("month", month[i]);
+            contentValues.put("year", year[i]);
+            contentValues.put("recur_type", recur_type[i]);
+            contentValues.put("all_day", all_day[i]);
+            contentValues.put("tag", tags[i]);
+            db.insert(TABLE_EVENTS, null, contentValues);
+        }*/
         db.execSQL("drop table if exists " + TABLE_EVENTS);
         db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
         onCreate(db);
