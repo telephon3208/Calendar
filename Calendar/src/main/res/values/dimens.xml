@@ -5,5 +5,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="ring_radius">20dp</dimen>
     <dimen name="min_ring_radius">19dp</dimen>
-    <dimen name="textSizeInDialogs">15dp</dimen>
+    <dimen name="textSizeSmall">16sp</dimen>
+    <dimen name="textSizeMedium">22sp</dimen>
 </resources>

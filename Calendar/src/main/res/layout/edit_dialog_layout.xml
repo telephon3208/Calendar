@@ -21,7 +21,7 @@
                 android:textSize="13dp"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginLeft="1dp"
                 android:text="Редактировать"
@@ -33,10 +33,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginLeft="1dp"
-                android:textSize="@dimen/textSizeInDialogs"
+                android:textSize="@dimen/textSizeSmall"
                 android:text="Удалить"
                 android:background="@color/colorAccentShade">
             </Button>
@@ -46,10 +46,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:layout_marginRight="1dp"
                 android:layout_marginLeft="1dp"
-                android:textSize="@dimen/textSizeInDialogs"
+                android:textSize="@dimen/textSizeSmall"
                 android:text="Отмена"
                 android:background="@color/colorAccentShade">
             </Button>

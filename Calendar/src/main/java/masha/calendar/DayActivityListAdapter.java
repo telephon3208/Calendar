@@ -37,24 +37,27 @@ public class DayActivityListAdapter extends CursorAdapter {
         int minute = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MINUTE));
         int allDay = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ALL_DAY));
 
+        TextView hourTextView = (TextView) view.findViewById(R.id.hour);
+        TextView minuteTextView = (TextView) view.findViewById(R.id.minute);
+
         ((TextView) view.findViewById(R.id.title)).setText(title);
         ((TextView) view.findViewById(R.id.description)).setText(description);
 
-        if (allDay == 0) {
+        if (allDay == 0 && hour != 0) {
             if (hour < 10) {
-                ((TextView) view.findViewById(R.id.hour)).setText("0" + hour);
+                hourTextView.setText("0" + hour);
             } else {
-                ((TextView) view.findViewById(R.id.hour)).setText(hour);
+                hourTextView.setText(String.format("%s", hour));
             }
             if (minute < 10) {
-                ((TextView) view.findViewById(R.id.minute)).setText("0" + minute);
+                minuteTextView.setText("0" + minute);
             } else {
-                ((TextView) view.findViewById(R.id.minute)).setText(minute);
+                minuteTextView.setText(String.format("%s", minute));
             }
         } else {
-            ((TextView) view.findViewById(R.id.hour)).setText("");
+            hourTextView.setText("  ");
             view.findViewById(R.id.column).setVisibility(View.GONE);
-            ((TextView) view.findViewById(R.id.minute)).setText("");
+            minuteTextView.setText("  ");
         }
 
 

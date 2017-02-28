@@ -109,7 +109,7 @@ public class DayActivity extends AppCompatActivity {
         Log.d(MonthActivity.TAG,"Начало метода onOptionsItemSelected");
         switch (item.getItemId()){
             case R.id.menuItemCreateEventDayActivity:
-                createEventActivity();
+                createEvent();
                 return true;
             case R.id.menuItemEditEventDayActivity:
                 showDialog(0); //вместо этого надо использовать DialogFragment
@@ -123,7 +123,7 @@ public class DayActivity extends AppCompatActivity {
     }
     //endregion
 
-    public void createEventActivity() {
+    public void createEvent() {
         Intent intent = new Intent(DayActivity.this, EventActivity.class);
         intent.putExtra("Число", day);
         intent.putExtra("Месяц", month);
@@ -144,7 +144,7 @@ public class DayActivity extends AppCompatActivity {
 
             switch (v.getId()) {
                 case R.id.fAB:
-                    createEventActivity();
+                    createEvent();
                     break;
             }
         }
@@ -170,16 +170,15 @@ public class DayActivity extends AppCompatActivity {
             Cursor cursor = database.query(        //критерии выборки из БД
                             DBHelper.TABLE_MONTH_EVENTS,
                             null,
-                            "date = ? AND title = ?", //условие для выборки
-                            new String [] {String.format("%s", day),
-                                    ((TextView) view.findViewById(R.id.title)).getText().toString()},
+                            "_id = ?", //условие для выборки
+                            new String [] {String.format("%s", id)},
                             null,
                             null,
                             null);
             cursor.moveToFirst();
 
             Intent intent = new Intent(DayActivity.this, EventActivity.class);
-            intent.putExtra("Строка из MonthEvents", cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ID)));
+            intent.putExtra("Строка из MonthEvents", cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ORIGINAL_ID)));
             startActivity(intent);
             Log.d(MonthActivity.TAG,"Запуск EventActivity");
         }

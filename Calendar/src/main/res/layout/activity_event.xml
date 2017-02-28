@@ -23,7 +23,7 @@
             android:hint="Название события"
             android:ems="10"
             android:id="@+id/eventName"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:maxLines="2"/>
 
         <EditText
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/dayView"
             android:textColor="@android:color/black"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:textAlignment="center" />
@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/allDay"
-            android:textSize="18sp"
+            android:textSize="@dimen/textSizeSmall"
             android:textColor="@android:color/black"
             android:textAlignment="textStart"
             android:padding="10dp"
@@ -104,7 +104,7 @@
             android:id="@+id/timeView"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:textColor="@android:color/black"
             android:textAlignment="center"
             android:visibility="visible"/>
@@ -150,7 +150,7 @@
             android:id="@+id/recurView"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:textColor="@android:color/black" />
 
         <Spinner
@@ -174,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/repeatView1"
                 android:layout_gravity="center|end"
-                android:textSize="18sp"
+                android:textSize="@dimen/textSizeSmall"
                 android:textColor="@android:color/black"
                 android:gravity="right"/>
 
@@ -189,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textView3"
                 android:textColor="@android:color/black"
-                android:textSize="18sp"
+                android:textSize="@dimen/textSizeSmall"
                 android:gravity="left"
                 android:layout_gravity="center|start"/>
 
@@ -201,7 +201,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/tagTitle"
             android:textAlignment="center"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:textColor="@android:color/black"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"/>
@@ -213,9 +213,10 @@
             android:inputType="text"
             android:hint="Тэг"
             android:ems="10"
-            android:textSize="24sp"
+            android:textSize="@dimen/textSizeMedium"
             android:maxLines="2"
-            android:gravity="left" />
+            android:gravity="left"
+            />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -228,7 +229,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/saveBtn"
-                android:textSize="18sp"
+                android:textSize="@dimen/textSizeSmall"
                 android:textColor="@android:color/black"
                 android:layout_margin="10dp"
                 android:background="@color/colorAccentShade"
@@ -241,7 +242,7 @@
                 android:id="@+id/cancel"
                 android:background="@color/colorAccentShade"
                 android:layout_weight="1"
-                android:textSize="18sp"
+                android:textSize="@dimen/textSizeSmall"
                 android:textColor="@android:color/black"
                 android:layout_margin="10dp"/>
 

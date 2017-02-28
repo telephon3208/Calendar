@@ -10,11 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -29,12 +32,14 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
     CheckBox allDay;
     LinearLayout timeLayout, recurLayout;
     TextView timeView;
-    EditText eventName, eventText, tagView;
+    AutoCompleteTextView autoCompleteTextView;
+    EditText eventName, eventText;
     Spinner recurSpinner;
     DBHelper dbHelper;
     SQLiteDatabase database;
     boolean createEvent = true;
     Intent intent;
+    long editEventID;
 
     NumberPicker dayPicker, monthPicker, yearPicker, hourPicker, minutePicker, recurDayPicker;
     ContentValues contentValues;
@@ -60,7 +65,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         cancel = (Button) findViewById(R.id.cancel);
         eventName = (EditText) findViewById(R.id.eventName);
         eventText = (EditText) findViewById(R.id.eventText);
-        tagView = (EditText) findViewById(R.id.tagView);
+        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.tagView);
 
         allDay.setOnClickListener(this);
         saveBtn.setOnClickListener(this);
@@ -72,6 +77,21 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         dbHelper = new DBHelper(this);
 
         //region настройка элементов интерфейса
+
+        CursorAdapter adapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1,
+                getAllTagsCursor(),
+                new String[]{"tag"},
+                new int[] {android.R.id.text1}, 0);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String tag = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                autoCompleteTextView.setText(tag);
+            }
+        });
+
         dayPicker.setMaxValue(31);
         dayPicker.setMinValue(1);
         dayPicker.setDividerPadding(5);
@@ -116,7 +136,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         if (intent.hasExtra("Строка из MonthEvents")) {
             //режим редактирования события
             createEvent = false;
-            long id = intent.getLongExtra("Строка из MonthEvents", 0);
+            editEventID = intent.getLongExtra("Строка из MonthEvents", 0);
 
             try {
                 database = dbHelper.getWritableDatabase();
@@ -129,8 +149,8 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
             Cursor cursor = database.query(DBHelper.TABLE_MONTH_EVENTS,
                     null,
-                    "_id = ?", //условие для выборки
-                    new String [] {String.format("%s", id)},
+                    "original_id = ?", //условие для выборки
+                    new String [] {String.format("%s", editEventID)},
                     null,
                     null,
                     null);
@@ -139,7 +159,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         } else if (intent.hasExtra("Строка из Events")) {
             //режим редактирования события
             createEvent = false;
-            long id = intent.getLongExtra("Строка из Events", 0);
+            editEventID = intent.getLongExtra("Строка из Events", 0);
 
             try {
                 database = dbHelper.getWritableDatabase();
@@ -153,7 +173,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             Cursor cursor = database.query(DBHelper.TABLE_EVENTS,
                     null,
                     "_id = ?", //условие для выборки
-                    new String [] {String.format("%s", id)},
+                    new String [] {String.format("%s", editEventID)},
                     null,
                     null,
                     null);
@@ -207,7 +227,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                     createEvent();
                     onBackPressed();
                 } else {
-                    editEvent(intent.getIntExtra("Строка из MonthEvent", 0));
+                    editEvent((int)editEventID);
                     onBackPressed();
                 }
                 break;
@@ -248,7 +268,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         
         if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
         else contentValues.put(DBHelper.KEY_ALL_DAY, 0);
-        contentValues.put(DBHelper.KEY_TAG, tagView.getText().toString());
+        contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
@@ -291,7 +311,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             contentValues.put(DBHelper.KEY_ALL_DAY, 0);
         }
 
-        contentValues.put(DBHelper.KEY_TAG, tagView.getText().toString());
+        contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         //строка из TableMonthEvents
@@ -354,7 +374,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
         eventName.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TITLE)));
         eventText.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION)));
-        tagView.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TAG)));
+        autoCompleteTextView.setText(cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TAG)));
         day = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE));
         month = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH));
         year = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR));
@@ -368,5 +388,21 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
         if (recurType <= 3) recurLayout.setVisibility(View.GONE);
         recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
+    }
+
+    Cursor getAllTagsCursor() {
+        try {
+            database = dbHelper.getWritableDatabase();
+        }
+        catch (SQLiteException ex){
+            database = dbHelper.getReadableDatabase();
+        } catch (Exception e) {
+            Log.d(MonthActivity.TAG,"Ошибка чтения БД");
+        }
+
+        Cursor cursor = database.query(DBHelper.TABLE_EVENTS, new String[] {"_id", "tag"},
+                null, null, "tag", null, null);
+
+        return cursor;
     }
 }

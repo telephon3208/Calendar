@@ -22,11 +22,11 @@ android:layout_height="match_parent">
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:paddingTop="20dp"
+            android:paddingTop="25dp"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
             android:text="ОК"
-            android:textSize="@dimen/textSizeInDialogs"
+            android:textSize="@dimen/textSizeSmall"
             android:background="@color/colorAccentShade">
         </Button>
         <Button
@@ -35,11 +35,11 @@ android:layout_height="match_parent">
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            android:paddingTop="20dp"
+            android:paddingTop="25dp"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
             android:text="Отмена"
-            android:textSize="@dimen/textSizeInDialogs"
+            android:textSize="@dimen/textSizeSmall"
             android:background="@color/colorAccentShade">
         </Button>
 
