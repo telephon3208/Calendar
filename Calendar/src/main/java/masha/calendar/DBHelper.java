@@ -14,7 +14,7 @@ import masha.calendar.MonthActivityPack.MonthActivity;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 27;
+    public static final int DATABASE_VERSION = 35;
     public static final String DATABASE_NAME = "eventsDB";
     public static final String TABLE_EVENTS = "events";
     public static final String TABLE_MONTH_EVENTS = "monthevents";
@@ -84,30 +84,69 @@ public class DBHelper extends SQLiteOpenHelper {
         Log.d(MonthActivity.TAG, "создана таблица MONTH_EVENTS");
 
    //     MonthActivity.tags.add("Государственные праздники");
-        addBaseEvents(db);
+
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-/*        Cursor cursorEventsTable = db.query(TABLE_EVENTS, null, null, null, null, null, null);
-        Cursor cursorMonthEventsTable = db.query(TABLE_MONTH_EVENTS, null, null, null, null, null, null);
-        ContentValues contentValues = new ContentValues();
 
-        // заполним таблицу
-        for (int i = 0; i < 7; i++) {
-            contentValues.put("title", title[i]);
-            contentValues.put("date", date[i]);
-            contentValues.put("month", month[i]);
-            contentValues.put("year", year[i]);
-            contentValues.put("recur_type", recur_type[i]);
-            contentValues.put("all_day", all_day[i]);
-            contentValues.put("tag", tags[i]);
-            db.insert(TABLE_EVENTS, null, contentValues);
-        }*/
-        db.execSQL("drop table if exists " + TABLE_EVENTS);
-        db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
-        onCreate(db);
+        if (newVersion > 31) {
+            //сохраним в курсоре данные из таблицы
+            Cursor cursorEventsTable = db.query(TABLE_EVENTS, null, null, null, null, null, null);
+            //    Cursor cursorMonthEventsTable = db.query(TABLE_MONTH_EVENTS, null, null, null, null, null, null);
+            Log.d(MonthActivity.TAG,"курсор : " + cursorEventsTable.getCount());
+
+            //удалим старую таблицу и создадим новую
+            db.execSQL("drop table if exists " + TABLE_EVENTS);
+            db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
+            onCreate(db);
+            Log.d(MonthActivity.TAG,"курсор : " + cursorEventsTable.getCount());
+            //заполним её данными из старой таблицы
+            ContentValues cv = new ContentValues();
+
+            int titleIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_TITLE);
+            int descriptionIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_DESCRIPTION);
+            int dateIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_DATE);
+            int monthIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_MONTH);
+            int yearIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_YEAR);
+            int hourIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_HOUR);
+            int minuteIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_MINUTE);
+            int recurTypeIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
+            int recurDaysIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
+            int allDayIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_ALL_DAY);
+            int tagIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_TAG);
+            int checkedIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_CHECKED);
+            //   int colorIndex = cursorEventsTable.getColumnIndex(DBHelper.KEY_CHECKED);
+
+            // заполним таблицу
+            if (cursorEventsTable.moveToFirst()) {
+                do {
+                    cv.put(DBHelper.KEY_TITLE, cursorEventsTable.getString(titleIndex));
+                    cv.put(DBHelper.KEY_DESCRIPTION, cursorEventsTable.getString(descriptionIndex));
+                    cv.put(DBHelper.KEY_DATE, cursorEventsTable.getInt(dateIndex));
+                    cv.put(DBHelper.KEY_MONTH, cursorEventsTable.getInt(monthIndex));
+                    cv.put(DBHelper.KEY_YEAR, cursorEventsTable.getInt(yearIndex));
+                    cv.put(DBHelper.KEY_HOUR, cursorEventsTable.getInt(hourIndex));
+                    cv.put(DBHelper.KEY_MINUTE, cursorEventsTable.getInt(minuteIndex));
+                    cv.put(DBHelper.KEY_RECUR_TYPE, cursorEventsTable.getInt(recurTypeIndex));
+                    cv.put(DBHelper.KEY_RECUR_DAYS, cursorEventsTable.getInt(recurDaysIndex));
+                    cv.put(DBHelper.KEY_ALL_DAY, cursorEventsTable.getInt(allDayIndex));
+                    cv.put(DBHelper.KEY_TAG, cursorEventsTable.getString(tagIndex));
+                    cv.put(DBHelper.KEY_CHECKED, cursorEventsTable.getInt(checkedIndex));
+                    db.insert(TABLE_EVENTS, null, cv);
+                } while (cursorEventsTable.moveToNext());
+            } else {
+                Log.d(MonthActivity.TAG,"записей в events не найдено");
+            }
+
+        } else {
+            db.execSQL("drop table if exists " + TABLE_EVENTS);
+            db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
+            onCreate(db);
+            addBaseEvents(db);
+        }
+
     }
 
     void addBaseEvents(SQLiteDatabase db) {

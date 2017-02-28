@@ -411,6 +411,7 @@ public class MonthActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG,"Ошибка чтения БД");
         }
+        //удаляем все события из таблицы текущего месяца
         database.delete(DBHelper.TABLE_MONTH_EVENTS, null, null);
 
  //       database.close();

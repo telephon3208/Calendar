@@ -90,10 +90,6 @@ public class DayActivity extends AppCompatActivity {
         minute = intent.getIntExtra("Минута", 0);
         //endregion
 
-       /* CursorAdapter adapter = new SimpleCursorAdapter(this,
-                R.layout.day_activity_list_item, getDayEvents(),
-                new String[] { "hour", "minute", "title", "description" },
-                new int[] { R.id.hour, R.id.minute, R.id.title, R.id.description }, 0);*/
         CursorAdapter adapter = new DayActivityListAdapter(this, getDayEvents(), 0);
         listEvents.setAdapter(adapter);
 
