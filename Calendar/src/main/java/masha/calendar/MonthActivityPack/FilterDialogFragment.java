@@ -8,10 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
@@ -29,12 +31,14 @@ import masha.calendar.R;
  * Created by Маша on 17.02.2017.
  */
 
-public class FilterDialogFragment extends DialogFragment implements OnClickListener  {
+public class FilterDialogFragment extends DialogFragment implements OnClickListener {
 
     final String LOG_TAG = "myLogs";
     ListView listView;
+    View v;
     Cursor cursor;
-    HashMap<Long, Boolean> collection;
+
+    HashMap<String, Boolean> collection;
 
     public static FilterDialogFragment newInstance(int num) {
         FilterDialogFragment f = new FilterDialogFragment();
@@ -50,7 +54,9 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        collection = new HashMap<>();
+        collection = new HashMap<String, Boolean>();
+
+
     }
 
     //onCreateDialog() используется для формирования диалога с использованием AlertDialog.Builder
@@ -58,36 +64,16 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getDialog().setTitle("Фильтр событий");
-        View v = inflater.inflate(R.layout.filter_dialog_layout, null);
+        v = inflater.inflate(R.layout.filter_dialog_layout, null);
         v.findViewById(R.id.btnYes).setOnClickListener(this);
         v.findViewById(R.id.btnCancel).setOnClickListener(this);
-
-        listView = (ListView) v.findViewById(R.id.listView);
         cursor = getTags();
+        listView = (ListView) v.findViewById(R.id.listView);
         CursorAdapter adapter = new FilterDialogAdapter(getActivity(),
                 cursor, 0);
-        Log.d(MonthActivity.TAG, "stableId: " + adapter.hasStableIds());
         listView.setAdapter(adapter);
-     //   listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setOnItemClickListener(itemListener);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //id совпадает с id курсора
-                Log.d(MonthActivity.TAG, "нажат пункт: " + position);
-                Log.d(MonthActivity.TAG, "нажат пункт id: " + id);
-                String tag = ((TextView) view.findViewById(R.id.tagTitle)).getText().toString();
-                Log.d(MonthActivity.TAG, "название: " + tag);
-                Log.d(MonthActivity.TAG, "id cursor: " + cursor.getInt(cursor.getColumnIndex("_id")));
-
-                CheckBox chB = (CheckBox) view.findViewById(R.id.checkBox);
-                chB.setChecked(!chB.isChecked());
-
-                //добавляю нажатый пункт в коллекцию
-                collection.put(id, chB.isChecked());
-            }
-        });
-        Log.d(MonthActivity.TAG, "onItemClick");
         return v;
     }
 
@@ -108,21 +94,20 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
 
         try {
             database = dbHelper.getWritableDatabase();
-            Log.d(MonthActivity.TAG,"получена БД");
-        }
-        catch (SQLiteException ex){
+            Log.d(MonthActivity.TAG, "получена БД");
+        } catch (SQLiteException ex) {
             database = dbHelper.getReadableDatabase();
         } catch (Exception e) {
-            Log.d(MonthActivity.TAG,"Ошибка чтения БД");
+            Log.d(MonthActivity.TAG, "Ошибка чтения БД");
             return null;
         }
 
         Cursor cursor = database.rawQuery("SELECT _id, " +
-                 DBHelper.KEY_TAG + ", " +
-                 DBHelper.KEY_CHECKED + " FROM " +
-                 DBHelper.TABLE_EVENTS + " GROUP BY " +
-                 DBHelper.KEY_TAG + " ORDER BY " +
-                 DBHelper.KEY_TAG + " ASC", null);
+                DBHelper.KEY_TAG + ", " +
+                DBHelper.KEY_CHECKED + " FROM " +
+                DBHelper.TABLE_EVENTS + " GROUP BY " +
+                DBHelper.KEY_TAG + " ORDER BY " +
+                DBHelper.KEY_TAG + " ASC", null);
 
         cursor.moveToFirst();
 
@@ -134,9 +119,10 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
         switch (v.getId()) {
             case R.id.btnYes:
                 checkBoxWriter();
+                collection.clear();
                 break;
             case R.id.btnCancel:
-
+                collection.clear();
                 break;
         }
         dismiss();
@@ -155,29 +141,54 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
 
         try {
             db = dbHelper.getWritableDatabase();
-            Log.d(MonthActivity.TAG,"получена БД");
-        }
-        catch (SQLiteException ex){
+            Log.d(MonthActivity.TAG, "получена БД");
+        } catch (SQLiteException ex) {
             db = dbHelper.getReadableDatabase();
         } catch (Exception e) {
-            Log.d(MonthActivity.TAG,"Ошибка чтения БД");
+            Log.d(MonthActivity.TAG, "Ошибка чтения БД");
         }
 
-        //записываем чекбоксы
-        for (Map.Entry<Long, Boolean> entry : collection.entrySet()) {
-            //если
+        //записываем чекбоксы  в обе таблицы
+        for (Map.Entry<String, Boolean> entry : collection.entrySet()) {
+            String tag = entry.getKey();
+            Log.d(MonthActivity.TAG, "rowID : " + tag);
+            Log.d(MonthActivity.TAG, "value : " + entry.getValue());
+
             if (entry.getValue()) {
                 db.update(DBHelper.TABLE_EVENTS, contentValues1,
-                        DBHelper.KEY_ID + "= ?", new String[] {entry.getKey().toString()});
+                        DBHelper.KEY_TAG + "= ?", new String[]{tag});
                 db.update(DBHelper.TABLE_MONTH_EVENTS, contentValues1,
-                        DBHelper.KEY_ORIGINAL_ID + "= ?", new String[] {entry.getKey().toString()});
+                        DBHelper.KEY_TAG + "= ?", new String[]{tag});
             } else {
                 db.update(DBHelper.TABLE_EVENTS, contentValues0,
-                        DBHelper.KEY_ID + "= ?", new String[] {entry.getKey().toString()});
+                        DBHelper.KEY_TAG + "= ?", new String[]{tag});
                 db.update(DBHelper.TABLE_MONTH_EVENTS, contentValues0,
-                        DBHelper.KEY_ORIGINAL_ID + "= ?", new String[] {entry.getKey().toString()});
+                        DBHelper.KEY_TAG + "= ?", new String[]{tag});
             }
         }
 
     }
+
+    AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //id совпадает с id курсора
+            CheckBox chB = (CheckBox) view.findViewById(R.id.checkBox);
+            chB.setChecked(!chB.isChecked());
+
+            //добавляю нажатый пункт в коллекцию
+            String tag = ((TextView) view.findViewById(R.id.tagTitle)).getText().toString();
+            collection.put(tag, chB.isChecked());
+        }
+
+
+    };
+
+/*    @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog().getWindow();
+        window.setLayout(400, 800);
+        window.setGravity(Gravity.CENTER);
+    }*/
 }

@@ -206,6 +206,30 @@ public class DayActivity extends AppCompatActivity {
         return cursor;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(MonthActivity.TAG,"onStart DayActivity");
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(MonthActivity.TAG,"onResume DayActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(MonthActivity.TAG,"onPause DayActivity");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(MonthActivity.TAG,"onRestoreInstanceState DayActivity");
+    }
+}
+
     //region onCreateDialog()
    /* protected Dialog onCreateDialog(int id) {
 
@@ -269,5 +293,5 @@ public class DayActivity extends AppCompatActivity {
 
     }*/
     //endregion
-}
+
 

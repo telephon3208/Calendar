@@ -36,6 +36,7 @@ public class FilterDialogAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         v = View.inflate(context, R.layout.filter_list_item, null);
         listView = (ListView) parent;
+
         return v;
     }
 
@@ -58,19 +59,4 @@ public class FilterDialogAdapter extends CursorAdapter {
         return cursor.getCount();
     }
 
-    /*@Override
-    public Object getItem(int position) {
-        return listView.getChildAt(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        listView.getChildAt(position);
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
-    }*/
 }

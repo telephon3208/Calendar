@@ -1,1 +1,1 @@
-include ':Calendar', ':dialogsTest', ':listAdaptersTest', ':menuTest'
+include ':Calendar', ':lifeCicleTest'

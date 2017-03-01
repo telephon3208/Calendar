@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:fitsSystemWindows="true"
-tools:context="masha.calendar.MonthActivityPack.MonthActivity"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="masha.calendar.MonthActivityPack.MonthActivity"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <include layout="@layout/dialog_content" />
+    <ListView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="20dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:divider="@color/colorAccentShade"
+        android:fadeScrollbars="true">
+
+    </ListView>
+
 
     <LinearLayout
+        android:id="@+id/buttonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="bottom|end">
+        android:layout_gravity="bottom|end"
+        android:layout_alignParentBottom="true">
         <Button
             android:id="@+id/btnYes"
             android:layout_width="0dp"
@@ -25,6 +41,7 @@ android:layout_height="match_parent">
             android:paddingTop="25dp"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
+            android:layout_marginBottom="1dp"
             android:text="ОК"
             android:textSize="@dimen/textSizeSmall"
             android:background="@color/colorAccentShade">
@@ -38,11 +55,12 @@ android:layout_height="match_parent">
             android:paddingTop="25dp"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
+            android:layout_marginBottom="1dp"
             android:text="Отмена"
             android:textSize="@dimen/textSizeSmall"
             android:background="@color/colorAccentShade">
-        </Button>
+            </Button>
 
     </LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

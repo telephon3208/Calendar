@@ -10,9 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Calendar" />
-            <option value="$PROJECT_DIR$/dialogsTest" />
-            <option value="$PROJECT_DIR$/listAdaptersTest" />
-            <option value="$PROJECT_DIR$/menuTest" />
+            <option value="$PROJECT_DIR$/lifeCicleTest" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
