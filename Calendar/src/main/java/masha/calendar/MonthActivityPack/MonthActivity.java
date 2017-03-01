@@ -65,7 +65,7 @@ public class MonthActivity extends AppCompatActivity {
 
 
     public final static String TAG = "MyLogs";
-    public static boolean updateEvents;
+    public static String update;
     public static PropertyChangeSupport support;
     SQLiteDatabase database;
     public static DBHelper dbHelper;
@@ -239,8 +239,14 @@ public class MonthActivity extends AppCompatActivity {
         support.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (updateEvents) {
-                    displayEvents();
+                switch (update) {
+                    case "Обновить выделение" :
+                        displayEvents();
+                        break;
+                    case "Обновить календарь" :
+                        filter.eventsFilter(displayMonth);
+                        displayEvents();
+                        break;
                 }
             }
         });
@@ -248,10 +254,10 @@ public class MonthActivity extends AppCompatActivity {
     }
 
 
-    public static void setUpdateEventsVariable(Boolean newValue) {
-        Boolean oldValue = updateEvents;
-        updateEvents = newValue;
-        support.firePropertyChange("updateEvents", oldValue, newValue);
+    public static void setUpdateVariable(String newValue) {
+        String oldValue = update;
+        update = newValue;
+        support.firePropertyChange("update", oldValue, newValue);
     }
 
 
@@ -476,11 +482,9 @@ public class MonthActivity extends AppCompatActivity {
             case R.id.filter:
                 showDialog("filterDialog");
                 Log.d(MonthActivity.TAG,"перед displayEvents()");
-                displayEvents();
                 return true;
             case R.id.editMenuItem:
                 showDialog("editDialog");
-                displayEvents();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1018,10 +1022,6 @@ public class MonthActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-/*        Intent intent = getIntent();
-        if (intent.getBooleanExtra("Обновить", false)) {
-            displayEvents();
-        }*/
         Log.d(TAG, "onPause MonthActivity");
     }
 }

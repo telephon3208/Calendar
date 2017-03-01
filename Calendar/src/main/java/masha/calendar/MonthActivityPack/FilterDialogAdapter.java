@@ -27,7 +27,6 @@ public class FilterDialogAdapter extends CursorAdapter {
         super(context, c, 0);
         this.context = context;
         cursor = c;
-
     }
 
 
@@ -44,7 +43,11 @@ public class FilterDialogAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         String tag = cursor.getString(cursor.getColumnIndex(DBHelper.KEY_TAG));
-        ((TextView) view.findViewById(R.id.tagTitle)).setText(tag);
+        if (tag.isEmpty()) {
+            ((TextView) view.findViewById(R.id.tagTitle)).setText("Без тэга");
+        } else {
+            ((TextView) view.findViewById(R.id.tagTitle)).setText(tag);
+        }
 
         if (cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_CHECKED)) == 1) {
             ((CheckBox) view.findViewById(R.id.checkBox)).setChecked(true);

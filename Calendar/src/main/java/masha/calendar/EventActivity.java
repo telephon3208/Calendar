@@ -230,7 +230,14 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         
         if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
         else contentValues.put(DBHelper.KEY_ALL_DAY, 0);
-        contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+
+        //проверяем записан ли тэг, если нет, то пишем "Без тэга"
+        if (autoCompleteTextView.getText().toString().isEmpty()) {
+            contentValues.put(DBHelper.KEY_TAG, "Без тэга");
+        } else {
+            contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+        }
+
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
@@ -285,6 +292,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 null,
                 null);
         cursorTME.moveToFirst();
+
         //находим originalID
         int originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
 

@@ -127,9 +127,10 @@ public class EditDialogFragment extends DialogFragment {
             switch (v.getId()) {
                 case R.id.btnEdit:
                     openEventActivity(eventID);
+                    MonthActivity.setUpdateVariable("Обновить календарь");
                     break;
                 case R.id.btnDelete:
-
+                    MonthActivity.setUpdateVariable("Обновить календарь");
                     break;
                 case R.id.btnCancel:
 

@@ -56,7 +56,7 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MonthActivity.updateEvents = false;
+        MonthActivity.setUpdateVariable("");
         collection = new HashMap<String, Boolean>();
 
 
@@ -84,8 +84,7 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(MonthActivity.TAG, "Dialog: onDismiss");
-        MonthActivity.setUpdateEventsVariable(false);
-     //   MonthActivity.updateEvents = true;
+        MonthActivity.setUpdateVariable("");
     }
 
     public void onCancel(DialogInterface dialog) {
@@ -124,10 +123,7 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
             case R.id.btnYes:
                 checkBoxWriter();
                 collection.clear();
-/*                Intent intent = new Intent(getActivity(), MonthActivity.class);
-                intent.putExtra("Обновить", true);
-                startActivity(intent);*/
-                MonthActivity.setUpdateEventsVariable(true);
+                MonthActivity.setUpdateVariable("Обновить выделение");
                 break;
             case R.id.btnCancel:
                 collection.clear();
