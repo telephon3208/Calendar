@@ -8,13 +8,6 @@
     <string name="SpecifyDate">Укажите дату события</string>
     <string name="recurText">Повторение события</string>
     <string name="filter">Фильтр</string>
-    <string-array name="recurList">
-        <item>не повторять</item>
-        <item>каждый год</item>
-        <item>каждый месяц</item>
-        <item>каждую неделю</item>
-        <item>каждые несколько дней</item>
-    </string-array>
     <string name="title_activity_new">New</string>
     <string name="EditEvent">Редактировать событие</string>
     <string name="edit">Редактировать</string>

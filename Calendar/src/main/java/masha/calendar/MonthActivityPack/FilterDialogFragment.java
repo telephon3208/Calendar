@@ -3,6 +3,7 @@ package masha.calendar.MonthActivityPack;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import masha.calendar.DBHelper;
+import masha.calendar.DayActivity;
 import masha.calendar.R;
 
 
@@ -54,6 +56,7 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MonthActivity.updateEvents = false;
         collection = new HashMap<String, Boolean>();
 
 
@@ -81,6 +84,8 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(MonthActivity.TAG, "Dialog: onDismiss");
+        MonthActivity.setUpdateEventsVariable(false);
+     //   MonthActivity.updateEvents = true;
     }
 
     public void onCancel(DialogInterface dialog) {
@@ -94,7 +99,6 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
 
         try {
             database = dbHelper.getWritableDatabase();
-            Log.d(MonthActivity.TAG, "получена БД");
         } catch (SQLiteException ex) {
             database = dbHelper.getReadableDatabase();
         } catch (Exception e) {
@@ -120,6 +124,10 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
             case R.id.btnYes:
                 checkBoxWriter();
                 collection.clear();
+/*                Intent intent = new Intent(getActivity(), MonthActivity.class);
+                intent.putExtra("Обновить", true);
+                startActivity(intent);*/
+                MonthActivity.setUpdateEventsVariable(true);
                 break;
             case R.id.btnCancel:
                 collection.clear();
@@ -184,11 +192,4 @@ public class FilterDialogFragment extends DialogFragment implements OnClickListe
 
     };
 
-/*    @Override
-    public void onStart() {
-        super.onStart();
-        Window window = getDialog().getWindow();
-        window.setLayout(400, 800);
-        window.setGravity(Gravity.CENTER);
-    }*/
 }

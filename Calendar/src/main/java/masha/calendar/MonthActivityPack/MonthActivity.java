@@ -28,6 +28,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Calendar;
 
 import masha.calendar.DBHelper;
@@ -62,6 +65,8 @@ public class MonthActivity extends AppCompatActivity {
 
 
     public final static String TAG = "MyLogs";
+    public static boolean updateEvents;
+    public static PropertyChangeSupport support;
     SQLiteDatabase database;
     public static DBHelper dbHelper;
     Filter filter;
@@ -229,6 +234,24 @@ public class MonthActivity extends AppCompatActivity {
         t.start();
         //endregion
 
+        //слушатель для изменения переменной updateEvents
+        support = new PropertyChangeSupport(this);
+        support.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (updateEvents) {
+                    displayEvents();
+                }
+            }
+        });
+
+    }
+
+
+    public static void setUpdateEventsVariable(Boolean newValue) {
+        Boolean oldValue = updateEvents;
+        updateEvents = newValue;
+        support.firePropertyChange("updateEvents", oldValue, newValue);
     }
 
 
@@ -921,11 +944,9 @@ public class MonthActivity extends AppCompatActivity {
         cleanColor();
         try {
             database = dbHelper.getWritableDatabase();
-            Log.d(TAG, "получена копия базы данных getWritableDatabase()");
         }
         catch (SQLiteException ex){
             database = dbHelper.getReadableDatabase();
-            Log.d(TAG, "получена копия базы данных getReadableDatabase()");
         } catch (Exception e) {
             Log.d(TAG, "Ошибка чтения базы данных");
         }
@@ -988,23 +1009,19 @@ public class MonthActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume MonthActivity");
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+/*        Intent intent = getIntent();
+        if (intent.getBooleanExtra("Обновить", false)) {
+            displayEvents();
+        }*/
+        Log.d(TAG, "onPause MonthActivity");
+    }
 }

@@ -155,30 +155,10 @@ public class DayActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            try {
-                database = dbHelper.getWritableDatabase();
-            }
-            catch (SQLiteException ex){
-                database = dbHelper.getReadableDatabase();
-            } catch (Exception e) {
-                Log.d(MonthActivity.TAG,"Ошибка чтения БД");
-            }
-
+            Intent intent = new Intent(DayActivity.this, EventActivity.class);
+            intent.putExtra("Строка из MonthEvents", id);
             Toast.makeText(getApplicationContext(), "Редактирование",
                     Toast.LENGTH_SHORT).show();
-
-            Cursor cursor = database.query(        //критерии выборки из БД
-                            DBHelper.TABLE_MONTH_EVENTS,
-                            null,
-                            "_id = ?", //условие для выборки
-                            new String [] {String.format("%s", id)},
-                            null,
-                            null,
-                            null);
-            cursor.moveToFirst();
-
-            Intent intent = new Intent(DayActivity.this, EventActivity.class);
-            intent.putExtra("Строка из MonthEvents", cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_ORIGINAL_ID)));
             startActivity(intent);
             Log.d(MonthActivity.TAG,"Запуск EventActivity");
         }
