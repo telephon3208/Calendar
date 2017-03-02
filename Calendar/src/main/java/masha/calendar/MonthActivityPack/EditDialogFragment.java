@@ -1,6 +1,9 @@
 package masha.calendar.MonthActivityPack;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,6 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+
 import masha.calendar.DBHelper;
 import masha.calendar.EventActivity;
 import masha.calendar.R;
@@ -30,6 +38,7 @@ public class EditDialogFragment extends DialogFragment {
 
     CursorAdapter adapter;
     long eventID = 0;
+    static ArrayList<Long> iDArray;
     ListView listView;
     Cursor cursor;
 
@@ -44,10 +53,7 @@ public class EditDialogFragment extends DialogFragment {
         return f;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+
 
     //onCreateDialog() используется для формирования диалога с использованием AlertDialog.Builder
     //для создания полностью кастомного диалога, надо использовать метод onCreateView()
@@ -56,9 +62,11 @@ public class EditDialogFragment extends DialogFragment {
         getDialog().setTitle("Выберите событие");
         View v = inflater.inflate(R.layout.edit_dialog_layout, null);
         v.findViewById(R.id.btnEdit).setOnClickListener(buttonsListener);
+        v.findViewById(R.id.btnDelete).setOnClickListener(buttonsListener);
         v.findViewById(R.id.btnCancel).setOnClickListener(buttonsListener);
         listView = (ListView) v.findViewById(R.id.listView);
         cursor = getAllEvents();
+        iDArray = new ArrayList<Long>();
         CursorAdapter adapter = new EditDialogAdapter(getActivity(),
                 cursor, 0);
         Log.d(MonthActivity.TAG, "stableId: " + adapter.hasStableIds());
@@ -69,14 +77,16 @@ public class EditDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //id совпадает с id курсора
-                Log.d(MonthActivity.TAG, "id : " + id);
-                Log.d(MonthActivity.TAG, "title : " + ((TextView) view.findViewById(R.id.title)).getText().toString());
                 parent.setBackgroundResource(R.color.colorPrimaryLight);
 
                 if (id == eventID) {
                     view.setBackgroundResource(R.color.colorPrimaryLight);
+                    if (!iDArray.isEmpty()) {
+                        iDArray.remove(id);
+                    }
                 } else {
                     view.setBackgroundResource(R.color.colorAccentLight);
+                    iDArray.add(id);
                 }
                 eventID = id;
             }
@@ -128,15 +138,19 @@ public class EditDialogFragment extends DialogFragment {
                 case R.id.btnEdit:
                     openEventActivity(eventID);
                     MonthActivity.setUpdateVariable("Обновить календарь");
+                    dismiss();
                     break;
                 case R.id.btnDelete:
-                    MonthActivity.setUpdateVariable("Обновить календарь");
+                    Log.d(MonthActivity.TAG, "Нажата кнопка delete");
+                    dismiss();
+                    showDialog("deleteDialog");
                     break;
                 case R.id.btnCancel:
-
+                    dismiss();
                     break;
         }
-            dismiss();
+
+
     }};
 
     void openEventActivity(long id) {
@@ -157,7 +171,23 @@ public class EditDialogFragment extends DialogFragment {
 
     }
 
+    public void showDialog(String tag) {
 
+        //списано с Android Guideline
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(tag);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = DeleteDialogFragment.newInstance(0, EditDialogFragment.iDArray);
+        newFragment.show(ft, tag);
+    }
 
 }
 

@@ -513,6 +513,9 @@ public class MonthActivity extends AppCompatActivity {
             case "editDialog" :
                 newFragment = EditDialogFragment.newInstance(0);
                 break;
+            case "deleteDialog" :
+                newFragment = DeleteDialogFragment.newInstance(0, EditDialogFragment.iDArray);
+                break;
         }
 
         newFragment.show(ft, tag);

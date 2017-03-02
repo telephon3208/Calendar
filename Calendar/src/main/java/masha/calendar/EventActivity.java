@@ -174,6 +174,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.allDay:
+                //слушаем чекбокс
                 allDay = (CheckBox) v;
                 if (allDay.isChecked()) {
                     timeLayout.setVisibility(View.GONE);
@@ -185,13 +186,14 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.saveBtn:
+                Log.d(MonthActivity.TAG,"createEvent? " + createEvent);
                 if (createEvent) {
                     createEvent();
-                    onBackPressed();
                 } else {
-                    editEvent((int)editEventID);
-                    onBackPressed();
+                    editEvent();
                 }
+                DayActivity.setUpdateVariable("Обновить список");
+                onBackPressed();
                 break;
             case R.id.cancel:
                 onBackPressed();
@@ -222,7 +224,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
         contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-        if (recurType == 0) {
+        if (recurType < 3) {
             contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
         } else {
             contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
@@ -237,23 +239,17 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         } else {
             contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
         }
-
+        //по умолчанию ставим галку на checked
+        contentValues.put(DBHelper.KEY_CHECKED, 1);
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
-
+        MonthActivity.setUpdateVariable("Обновить календарь");
     }
 
-    void editEvent(int id) {
-        try {
-            database = dbHelper.getWritableDatabase();
-        }
-        catch (SQLiteException ex){
-            database = dbHelper.getReadableDatabase();
-        } catch (Exception e) {
-            Log.d(MonthActivity.TAG,"Ошибка чтения БД");
-        }
+    void editEvent() {
 
+        Log.d(MonthActivity.TAG,"в методе EditEvent()");
         contentValues = new ContentValues();
 
         contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
@@ -261,14 +257,12 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
         contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
         contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
-
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-        switch (recurType) {
-            case 0:
-                contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
-                break;
-            default:
-                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+
+        if (recurType < 3) {
+            contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
+        } else {
+            contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
         }
 
         if (allDay.isChecked()) {
@@ -280,24 +274,52 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             contentValues.put(DBHelper.KEY_ALL_DAY, 0);
         }
 
-        contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+        //проверяем записан ли тэг, если нет, то пишем "Без тэга"
+        if (autoCompleteTextView.getText().toString().isEmpty()) {
+            contentValues.put(DBHelper.KEY_TAG, "Без тэга");
+        } else {
+            contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+        }
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
+        Log.d(MonthActivity.TAG,"получили cursor");
+
+        try {
+            database = dbHelper.getWritableDatabase();
+        }
+        catch (SQLiteException ex){
+            database = dbHelper.getReadableDatabase();
+        } catch (Exception e) {
+            Log.d(MonthActivity.TAG,"Ошибка чтения БД");
+        }
 
         //строка из TableMonthEvents
         Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
                 null,
                 "_id = ?", //условие для выборки
-                new String [] {String.format("%s", id)},
+                new String [] {String.format("%s",
+                        intent.getLongExtra("Строка из MonthEvents", 0))},
                 null,
                 null,
                 null);
         cursorTME.moveToFirst();
 
+        int checked = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_CHECKED));
+
+        if (checked == 1) {
+            contentValues.put(DBHelper.KEY_CHECKED, 1);
+        } else {
+            contentValues.put(DBHelper.KEY_CHECKED, 0);
+        }
+
         //находим originalID
         int originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
-
+        Log.d(MonthActivity.TAG,"находим оригинальный ID");
         database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
                 new String[] {String.format("%s", originalID)});
+        Log.d(MonthActivity.TAG,"обавляем данные в таблице");
+        //отправляем в MonthActivity весточку что надо профильтровать заново
+        MonthActivity.setUpdateVariable("Обновить календарь");
+        Log.d(MonthActivity.TAG,"setUpdateVariable()");
     }
 
     //region Listener для spinner
@@ -426,6 +448,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
     protected void onPause() {
         super.onPause();
         Log.d(MonthActivity.TAG,"onPause EventActivity");
+        MonthActivity.setUpdateVariable("");
     }
 
     @Override
@@ -433,5 +456,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(MonthActivity.TAG,"onRestoreInstanceState EventActivity");
     }
+
 }
 

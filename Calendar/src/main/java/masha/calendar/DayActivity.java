@@ -19,6 +19,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,6 +37,8 @@ public class DayActivity extends AppCompatActivity {
     SQLiteDatabase database;
     ArrayList<HashMap<String, String>> myArrList;
     HashMap<String, String> map;
+    public static PropertyChangeSupport supportDayActivity;
+    public static String updateDayActivityList;
 
  //   private final static String TAG = "MyLogs";
 
@@ -90,9 +95,33 @@ public class DayActivity extends AppCompatActivity {
         minute = intent.getIntExtra("Минута", 0);
         //endregion
 
-        CursorAdapter adapter = new DayActivityListAdapter(this, getDayEvents(), 0);
+        final CursorAdapter adapter = new DayActivityListAdapter(this, getDayEvents(), 0);
         listEvents.setAdapter(adapter);
 
+        //слушатель для изменения переменной updateEvents
+        supportDayActivity = new PropertyChangeSupport(this);
+        supportDayActivity.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (updateDayActivityList) {
+                    case "Обновить список" :
+                        MonthActivity.setUpdateVariable("Обновить календарь");
+                        adapter.changeCursor(getDayEvents());
+                        break;
+                    case "" :
+
+                        break;
+                }
+            }
+        });
+
+
+    }
+
+    public static void setUpdateVariable(String newValue) {
+        String oldValue = updateDayActivityList;
+        updateDayActivityList = newValue;
+        supportDayActivity.firePropertyChange("updateDayActivityList", oldValue, newValue);
     }
 
     //region Все что касается меню
@@ -154,7 +183,6 @@ public class DayActivity extends AppCompatActivity {
     AdapterView.OnItemClickListener listEventsOnClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
             Intent intent = new Intent(DayActivity.this, EventActivity.class);
             intent.putExtra("Строка из MonthEvents", id);
             Toast.makeText(getApplicationContext(), "Редактирование",
@@ -195,6 +223,7 @@ public class DayActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d(MonthActivity.TAG,"onResume DayActivity");
+        DayActivity.setUpdateVariable("");
     }
 
     @Override

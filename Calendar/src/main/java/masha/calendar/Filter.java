@@ -39,6 +39,8 @@ public class Filter {
             Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
         }
 
+        database.delete(DBHelper.TABLE_MONTH_EVENTS, null, null);
+
    //     String date = String.format("%s", c.get(Calendar.DAY_OF_MONTH));
         String month = String.format("%s", c.get(Calendar.MONTH));
         String year = String.format("%s", c.get(Calendar.YEAR));

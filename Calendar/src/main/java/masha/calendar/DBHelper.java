@@ -214,5 +214,10 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteEvent(long eventID) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DBHelper.TABLE_EVENTS, "_id = " + eventID, null);
+        db.delete(DBHelper.TABLE_MONTH_EVENTS, "original_id = " + eventID, null);
+    }
 
 }
