@@ -9,6 +9,7 @@ import android.util.Log;
 
 import masha.calendar.MonthActivityPack.MonthActivity;
 import java.util.Calendar;
+import java.util.SimpleTimeZone;
 
 import static masha.calendar.DBHelper.TABLE_MONTH_EVENTS;
 
@@ -79,7 +80,7 @@ public class Filter {
         processEntries(cursor, c);
 
         //фильтруем события раз в несколько дней
-        String where = "recur_type IN (3, 4) AND ((year = ? AND month <= ?) OR year < ?)";
+        String where = "(recur_type = 3 OR recur_type = 4) AND ((year = ? AND month <= ?) OR year < ?)";
 
         cursor = database.query(        //критерии выборки из БД
                 DBHelper.TABLE_EVENTS,
@@ -155,70 +156,78 @@ public class Filter {
 
     }
 
-    void computeRecurDays(Cursor cursor, Calendar c) {
-        Log.d(MonthActivity.TAG, "новое событие");
+    void computeRecurDays(Cursor cursor, Calendar C) {
+        //создаем клон календаря, чтобы производить с ним манипуляции
+        Calendar c = (Calendar) C.clone();
+        int currentMonth = c.get(Calendar.MONTH);
+
         //создаю календарь соответствующий найденному событию
         Calendar firstEvent = Calendar.getInstance();
         firstEvent.set(Calendar.YEAR, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));
         firstEvent.set(Calendar.MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH)));
-        firstEvent.set(Calendar.DAY_OF_MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
-        //выставляем нулевое время
+        firstEvent.set(Calendar.DATE, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
         firstEvent.set(Calendar.HOUR_OF_DAY, 0);
         firstEvent.set(Calendar.MINUTE, 0);
         firstEvent.set(Calendar.SECOND, 0);
         firstEvent.set(Calendar.MILLISECOND, 0);
-      //  firstEvent.setLenient(true);
+        firstEvent.setLenient(false);
 
-        //создаю копию отборажаемого календаря
-        Calendar nextEvent = (Calendar) c.clone();
-        nextEvent.set(Calendar.DAY_OF_MONTH, 1);
-        //выставляем нулевое время
-        nextEvent.set(Calendar.HOUR_OF_DAY, 0);
-        nextEvent.set(Calendar.MINUTE, 0);
-        nextEvent.set(Calendar.SECOND, 0);
-        nextEvent.set(Calendar.MILLISECOND, 0);
-      //  nextEvent.setLenient(true);
+        Log.d(MonthActivity.TAG, "значение firstEvent : " + firstEvent.get(Calendar.DATE) + "." +
+                firstEvent.get(Calendar.MONTH) + "." + firstEvent.get(Calendar.YEAR) + " время : " +
+                firstEvent.get(Calendar.HOUR_OF_DAY) + ":" + firstEvent.get(Calendar.MINUTE) + ":" +
+                firstEvent.get(Calendar.SECOND) + ":" + firstEvent.get(Calendar.MILLISECOND));
 
         int recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
-        if (recurDays == 0) recurDays = 7; //чтобы не делить на ноль
+        if (recurDays == 0) {
+            recurDays = 7; //чтобы не делить на ноль
+        }
         int sutki = 1000 * 60 * 60 * 24; //сутки в миллисекундах
         long denominator = sutki * recurDays; //рассчитаем заранее знаменатель
 
         //если открыт месяц начала регулярных событий
         if ((firstEvent.get(Calendar.MONTH) == c.get(Calendar.MONTH) &&
                 (firstEvent.get(Calendar.YEAR) == c.get(Calendar.YEAR)))) {
-            while (c.get(Calendar.MONTH) == firstEvent.get(Calendar.YEAR)) {
-                addEntry(cursor, c);
-                c.add(Calendar.DAY_OF_MONTH, recurDays);
+
+            Log.d(MonthActivity.TAG, "блок 1");
+            while (firstEvent.get(Calendar.MONTH) == currentMonth) {
+           //     Log.d(MonthActivity.TAG, "календарь firstEvent : " + firstEvent.get(Calendar.DATE) + "." +
+           //             firstEvent.get(Calendar.MONTH) + "." + firstEvent.get(Calendar.YEAR));
+                addEntry(cursor, firstEvent);
+                firstEvent.add(Calendar.DAY_OF_MONTH, recurDays);
             }
+
         } else { //если открыт последующий месяц
+            Log.d(MonthActivity.TAG, "блок 2");
+            //обнуляю календарь с
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            c.setLenient(false);
 
             //повторяем пока не вышли за рамки текущего месяца
-            while (c.get(Calendar.MONTH) == nextEvent.get(Calendar.MONTH)) { //пока месяц не истек
+            while (c.get(Calendar.MONTH) == currentMonth) { //пока месяц не истек
+                Log.d(MonthActivity.TAG, "значение с : " + c.get(Calendar.DATE) + "." +
+                        c.get(Calendar.MONTH) + "." + c.get(Calendar.YEAR) + " время : " +
+                        c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" +
+                        c.get(Calendar.SECOND) + ":" + c.get(Calendar.MILLISECOND));
         //        Log.d(MonthActivity.TAG, "тело цикла");
                 //проверяем целое ли количество циклов прошло
-                if ((nextEvent.getTimeInMillis() - firstEvent.getTimeInMillis())
-                        % denominator != 0) {
-                    Log.d(MonthActivity.TAG, "нецелое количество циклов");
-/*                    Log.d(MonthActivity.TAG, "миллисекунд в nextEvent : " + nextEvent.getTimeInMillis());
-                    Log.d(MonthActivity.TAG, "миллисекунд в firstEvent : " + firstEvent.getTimeInMillis());
-                    Log.d(MonthActivity.TAG, "делитель : " + denominator);
-                    double d = ((nextEvent.getTimeInMillis() - firstEvent.getTimeInMillis())
-                            / denominator);
-                    Log.d(MonthActivity.TAG, "количество недель разделяющих события : " + d);*/
-                    Log.d(MonthActivity.TAG, "остаток от деления : " + (nextEvent.getTimeInMillis() - firstEvent.getTimeInMillis())
-                            % denominator);
-                    //если нецелое, то прибавляем еще один день и проверяем снова
-                    nextEvent.add(Calendar.MILLISECOND, sutki);
-                } else {
-                    Log.d(MonthActivity.TAG, "целое количество циклов");
+                Log.d(MonthActivity.TAG, "c.getTimeInMillis() = " + c.getTimeInMillis());
+                Log.d(MonthActivity.TAG, "firstEvent.getTimeInMillis() = " + firstEvent.getTimeInMillis());
+                Log.d(MonthActivity.TAG, "denominator = " + denominator);
+                if ((c.getTimeInMillis() - firstEvent.getTimeInMillis())
+                        % denominator == 0) {
+                    Log.d(MonthActivity.TAG, "заносим день в базу и прибавляем цикл");
                     //если целое, то заносим день в базу данных и прибавляем цикл
-                    addEntry(cursor, nextEvent);
-                    nextEvent.add(Calendar.DAY_OF_MONTH, recurDays);
-                  /*  nextEvent.set(Calendar.HOUR_OF_DAY, 0);
-                    nextEvent.set(Calendar.MINUTE, 0);
-                    nextEvent.set(Calendar.SECOND, 0);
-                    nextEvent.set(Calendar.MILLISECOND, 0);*/
+                    addEntry(cursor, c);
+                    c.add(Calendar.DAY_OF_MONTH, recurDays);
+                } else {
+                    Log.d(MonthActivity.TAG, "прибавляем еще один день и проверяем снова");
+                    //если нецелое, то прибавляем еще один день и проверяем снова
+              //      c.add(Calendar.MILLISECOND, sutki);
+                    c.add(Calendar.DAY_OF_MONTH, 1);
                 }
             }
         }

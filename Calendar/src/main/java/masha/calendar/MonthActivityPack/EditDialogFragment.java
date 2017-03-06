@@ -185,7 +185,7 @@ public class EditDialogFragment extends DialogFragment {
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = DeleteDialogFragment.newInstance(0, EditDialogFragment.iDArray);
+        DialogFragment newFragment = DeleteDialogFragment.newInstance(eventID, EditDialogFragment.iDArray);
         newFragment.show(ft, tag);
     }
 

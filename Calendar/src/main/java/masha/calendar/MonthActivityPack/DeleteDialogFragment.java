@@ -26,20 +26,21 @@ import masha.calendar.R;
 
 public class DeleteDialogFragment extends DialogFragment {
 
-    long ID = 0;
+    static long ID = 0;
     ListView listView;
     Cursor cursor;
     static ArrayList<Long> iDArray;
 
-    public static DeleteDialogFragment newInstance(int num, ArrayList<Long> arrayList) {
+    public static DeleteDialogFragment newInstance(long num, ArrayList<Long> arrayList) {
         DeleteDialogFragment f = new DeleteDialogFragment();
         Log.d(MonthActivity.TAG,"DeleteDialogFragment конструктор");
         iDArray = arrayList;
+        ID = num;
 
-        // Supply num input as an argument.
+/*        // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putInt("num", num);
-        f.setArguments(args);
+        f.setArguments(args);*/
 
         return f;
     }
@@ -105,6 +106,7 @@ public class DeleteDialogFragment extends DialogFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btnYes:
+                    Log.d(MonthActivity.TAG,"Удалить событие с id : " + ID);
                     MonthActivity.dbHelper.deleteEvent(ID);
                     MonthActivity.setUpdateVariable("Обновить календарь");
                     break;

@@ -168,14 +168,6 @@ public class DBHelper extends SQLiteOpenHelper {
         cursorEventsTable.close();
     }
 
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //удалим старую таблицу и создадим новую
-        db.execSQL("drop table if exists " + TABLE_EVENTS);
-        db.execSQL("drop table if exists " + TABLE_MONTH_EVENTS);
-        onCreate(db);
-    }
-
     void addBaseEvents(SQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
         String title[] = {
@@ -192,8 +184,8 @@ public class DBHelper extends SQLiteOpenHelper {
         int recur_type[] = { 1, 1, 1, 1, 1, 1, 1 };
         int all_day[] = { 1, 1, 1, 1, 1, 1, 1 };
         String tags[] = {
-                "Мужской праздник",
-                "Женский праздник",
+                "Государственные праздники",
+                "Государственные праздники",
                 "Государственные праздники",
                 "Государственные праздники",
                 "Государственные праздники",
