@@ -9,6 +9,7 @@ import android.util.Log;
 
 import masha.calendar.MonthActivityPack.MonthActivity;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.SimpleTimeZone;
 
 import static masha.calendar.DBHelper.TABLE_MONTH_EVENTS;
@@ -162,7 +163,7 @@ public class Filter {
         int currentMonth = c.get(Calendar.MONTH);
 
         //создаю календарь соответствующий найденному событию
-        Calendar firstEvent = Calendar.getInstance();
+        Calendar firstEvent = (Calendar) C.clone();
         firstEvent.set(Calendar.YEAR, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_YEAR)));
         firstEvent.set(Calendar.MONTH, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_MONTH)));
         firstEvent.set(Calendar.DATE, cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_DATE)));
@@ -172,32 +173,23 @@ public class Filter {
         firstEvent.set(Calendar.MILLISECOND, 0);
         firstEvent.setLenient(false);
 
-        Log.d(MonthActivity.TAG, "значение firstEvent : " + firstEvent.get(Calendar.DATE) + "." +
-                firstEvent.get(Calendar.MONTH) + "." + firstEvent.get(Calendar.YEAR) + " время : " +
-                firstEvent.get(Calendar.HOUR_OF_DAY) + ":" + firstEvent.get(Calendar.MINUTE) + ":" +
-                firstEvent.get(Calendar.SECOND) + ":" + firstEvent.get(Calendar.MILLISECOND));
-
         int recurDays = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS));
         if (recurDays == 0) {
             recurDays = 7; //чтобы не делить на ноль
         }
-        int sutki = 1000 * 60 * 60 * 24; //сутки в миллисекундах
+        long sutki = 1000 * 60 * 60 * 24; //сутки в миллисекундах
         long denominator = sutki * recurDays; //рассчитаем заранее знаменатель
 
         //если открыт месяц начала регулярных событий
         if ((firstEvent.get(Calendar.MONTH) == c.get(Calendar.MONTH) &&
                 (firstEvent.get(Calendar.YEAR) == c.get(Calendar.YEAR)))) {
 
-            Log.d(MonthActivity.TAG, "блок 1");
             while (firstEvent.get(Calendar.MONTH) == currentMonth) {
-           //     Log.d(MonthActivity.TAG, "календарь firstEvent : " + firstEvent.get(Calendar.DATE) + "." +
-           //             firstEvent.get(Calendar.MONTH) + "." + firstEvent.get(Calendar.YEAR));
                 addEntry(cursor, firstEvent);
                 firstEvent.add(Calendar.DAY_OF_MONTH, recurDays);
             }
 
         } else { //если открыт последующий месяц
-            Log.d(MonthActivity.TAG, "блок 2");
             //обнуляю календарь с
             c.set(Calendar.DAY_OF_MONTH, 1);
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -206,27 +198,21 @@ public class Filter {
             c.set(Calendar.MILLISECOND, 0);
             c.setLenient(false);
 
+            long cMillis;
+            long firstEventMillis;
+
             //повторяем пока не вышли за рамки текущего месяца
             while (c.get(Calendar.MONTH) == currentMonth) { //пока месяц не истек
-                Log.d(MonthActivity.TAG, "значение с : " + c.get(Calendar.DATE) + "." +
-                        c.get(Calendar.MONTH) + "." + c.get(Calendar.YEAR) + " время : " +
-                        c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" +
-                        c.get(Calendar.SECOND) + ":" + c.get(Calendar.MILLISECOND));
-        //        Log.d(MonthActivity.TAG, "тело цикла");
-                //проверяем целое ли количество циклов прошло
-                Log.d(MonthActivity.TAG, "c.getTimeInMillis() = " + c.getTimeInMillis());
-                Log.d(MonthActivity.TAG, "firstEvent.getTimeInMillis() = " + firstEvent.getTimeInMillis());
-                Log.d(MonthActivity.TAG, "denominator = " + denominator);
-                if ((c.getTimeInMillis() - firstEvent.getTimeInMillis())
-                        % denominator == 0) {
-                    Log.d(MonthActivity.TAG, "заносим день в базу и прибавляем цикл");
+                //это нужно чтобы компенсировать разницу часовых поясов (нашла в инете)
+                cMillis = c.getTimeInMillis() + c.getTimeZone().getOffset(c.getTimeInMillis());
+                firstEventMillis = firstEvent.getTimeInMillis() + firstEvent.getTimeZone().getOffset(firstEvent.getTimeInMillis());
+
+                if ((cMillis - firstEventMillis) % denominator == 0) {
                     //если целое, то заносим день в базу данных и прибавляем цикл
                     addEntry(cursor, c);
                     c.add(Calendar.DAY_OF_MONTH, recurDays);
                 } else {
-                    Log.d(MonthActivity.TAG, "прибавляем еще один день и проверяем снова");
                     //если нецелое, то прибавляем еще один день и проверяем снова
-              //      c.add(Calendar.MILLISECOND, sutki);
                     c.add(Calendar.DAY_OF_MONTH, 1);
                 }
             }
