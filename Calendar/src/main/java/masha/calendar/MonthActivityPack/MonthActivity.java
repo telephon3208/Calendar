@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -63,7 +64,6 @@ public class MonthActivity extends AppCompatActivity {
 
     public static Calendar rightNow, displayMonth;
 
-
     public final static String TAG = "MyLogs";
     public static String update;
     public static PropertyChangeSupport support;
@@ -71,7 +71,6 @@ public class MonthActivity extends AppCompatActivity {
     public static DBHelper dbHelper;
     Filter filter;
     DialogFragment filterDialog, editDialog;
-
 
     //endregion
 
@@ -139,6 +138,18 @@ public class MonthActivity extends AppCompatActivity {
         button2 = (Button) findViewById(R.id.button2);
         //endregion
 
+        //region Инициализация переменных
+        rightNow = Calendar.getInstance();              //берем системное время и дату
+        displayMonth = (Calendar) rightNow.clone();
+        dbHelper = new DBHelper(this);
+        filter = new Filter();
+        //     filterDialog = new FilterDialogFragment();
+        editDialog = new EditDialogFragment();
+
+        //endregion
+
+        createCalendar(rightNow);              //создаем календарь
+
         //region SetListeners
         arrowLeft.setOnClickListener(arrowsListener);
         arrowRight.setOnClickListener(arrowsListener);
@@ -190,20 +201,11 @@ public class MonthActivity extends AppCompatActivity {
 
         button1.setOnClickListener(testButtonsListener);
         button2.setOnClickListener(testButtonsListener);
-
         //endregion
 
-        //region Инициализация переменных
-        rightNow = Calendar.getInstance();              //берем системное время и дату
-        displayMonth = (Calendar) rightNow.clone();
-        dbHelper = new DBHelper(this);
-        filter = new Filter();
-   //     filterDialog = new FilterDialogFragment();
-        editDialog = new EditDialogFragment();
 
-        //endregion
 
-        createCalendar(rightNow);              //создаем календарь
+
 
         //region Поток, отвечающий за отображение времени
         //создаем handler для изменения времени
@@ -253,26 +255,57 @@ public class MonthActivity extends AppCompatActivity {
 
     }
 
-
     public static void setUpdateVariable(String newValue) {
         String oldValue = update;
         update = newValue;
         support.firePropertyChange("update", oldValue, newValue);
     }
 
-
     //region Создание календаря
+    private class CreateCalendarTask extends AsyncTask<Void, Void, Void> {
+
+        //   int weekDay, maxDay, dayNumber, daysIn1W;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG,"onPreExecute)");
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.d(TAG,"doInBackground)");
+            filter.eventsFilter(displayMonth);
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(TAG,"onPostExecute)");
+            displayEvents();
+
+        }
+    }
+
     public void createCalendar(Calendar c) {
         Log.d(TAG,"начало createCalendar()");
+
+        CreateCalendarTask task = new CreateCalendarTask();
+        task.execute();
+
         cleanAll();                     //очищаем все
 
-        int weekDay;                    //текущий день недели
-        int maxDay = lastDayOfMonth(c); //вычисляем количество дней в месяце
+        int weekDay, maxDay, dayNumber, daysIn1W;
 
-        int dayNumber = c.get(Calendar.DAY_OF_MONTH);
+        maxDay = lastDayOfMonth(displayMonth); //вычисляем количество дней в месяце
 
-        if (c.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-            weekDay = c.get(Calendar.DAY_OF_WEEK) - 1;
+        dayNumber = displayMonth.get(Calendar.DAY_OF_MONTH);
+
+        if (displayMonth.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+            weekDay = displayMonth.get(Calendar.DAY_OF_WEEK) - 1;
         } else weekDay = 7;
 
         while (dayNumber != 1) {  //Высчитываем на какой день недели приходится
@@ -280,9 +313,12 @@ public class MonthActivity extends AppCompatActivity {
             dayNumber--;
             if (weekDay == 0) weekDay = 7;
         }
-      //  Log.d(TAG,"день недели первого числа месяца: " + getMinimalDaysInFirstWeek(c));
+        //  Log.d(TAG,"день недели первого числа месяца: " + getMinimalDaysInFirstWeek(c));
 
-        int daysIn1W = 7 - weekDay + 1;             //количество дней месяца в 1 неделе(строке)
+        daysIn1W = 7 - weekDay + 1;             //количество дней месяца в 1 неделе(строке)
+
+        setMonth(displayMonth);                                 //устанавливаем название месяца
+        monthView.append(" " + String.format("%s", displayMonth.get(Calendar.YEAR)));  //прибавляем год к месяцу
 
         //добавляем нужные линии
         if (!(weekDay == 1 && maxDay == 28)) {
@@ -320,15 +356,11 @@ public class MonthActivity extends AppCompatActivity {
             }
         }
 
-        setMonth(c);                                 //устанавливаем название месяца
-        monthView.append(" " + String.format("%s", c.get(Calendar.YEAR)));  //прибавляем год к месяцу
-
-        displayTime();
-        filter.eventsFilter(c);
-        displayEvents();
+        //  displayTime();
 
         Log.d(TAG,"календарь создан");
     }
+
     public Button btnSearch(int day) {
         Button b = b1;
         for (Button i : w1) {
@@ -444,7 +476,7 @@ public class MonthActivity extends AppCompatActivity {
         //удаляем все события из таблицы текущего месяца
         database.delete(DBHelper.TABLE_MONTH_EVENTS, null, null);
 
- //       database.close();
+        //       database.close();
     }
 
     int lastDayOfMonth(Calendar c) {
@@ -493,7 +525,7 @@ public class MonthActivity extends AppCompatActivity {
 
     public void showDialog(String tag) {
 
-        //списано с Android Guideline
+        //копипаст с Android Guideline
         // DialogFragment.show() will take care of adding the fragment
         // in a transaction.  We also want to remove any currently showing
         // dialog, so make our own transaction and take care of that here.
@@ -514,7 +546,7 @@ public class MonthActivity extends AppCompatActivity {
                 newFragment = EditDialogFragment.newInstance(0);
                 break;
             case "deleteDialog" :
-                newFragment = DeleteDialogFragment.newInstance(0, EditDialogFragment.iDArray);
+                newFragment = DeleteDialogFragment.newInstance(EditDialogFragment.iDArray);
                 break;
         }
 
@@ -814,7 +846,7 @@ public class MonthActivity extends AppCompatActivity {
                         do {
                             Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
                                     ", title = " + cursor.getString(titleIndex) +
-                       //             ", description = " + cursor.getString(descriptionIndex) +
+                                    //             ", description = " + cursor.getString(descriptionIndex) +
                                     ", date = " + cursor.getString(dateIndex) +
                                     ", month = " + cursor.getString(monthIndex) +
                                     ", year = " + cursor.getString(yearIndex) +
@@ -851,7 +883,7 @@ public class MonthActivity extends AppCompatActivity {
                         do {
                             Log.d(TAG, "ID = " + cursor.getInt(idIndex) +
                                     ", title = " + cursor.getString(titleIndex) +
-     //                               ", description = " + cursor.getString(descriptionIndex) +
+                                    //                               ", description = " + cursor.getString(descriptionIndex) +
                                     ", date = " + cursor.getString(dateIndex) +
                                     ", month = " + cursor.getString(monthIndex) +
                                     ", year = " + cursor.getString(yearIndex) +
@@ -869,85 +901,8 @@ public class MonthActivity extends AppCompatActivity {
             }}};
     //endregion
 
-    //region onCreateDialog()
-   /* protected Dialog onCreateDialog(int id) {
-
-        TagsFilter tagsFilter = new TagsFilter();
-        ArrayList<String> tags = tagsFilter.tagsFilter();
-        final String [] items = tags.toArray(new String [tags.size()]); //получили массив тэгов
-
-        //преобразование ArrayList<Boolean> в boolean[]
-        ArrayList<Boolean> b = tagsFilter.checkFilter();
-        Log.d(TAG, "вызвали метод checkFilter()");
-        final Boolean[] b1 = b.toArray(new Boolean [b.size()]);
-        final boolean checkedItems [] = new boolean[b1.length];
-
-        for (int i = 0; i < checkedItems.length; i++) {
-                checkedItems[i] = b1[i];
-        }
-        Log.d(TAG, "преобразовали ArrayList в массив boolean");
-            //получили массив чекбоксов
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Фильтр событий")
-                .setCancelable(false)
-                .setMultiChoiceItems(items, checkedItems,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which, boolean isChecked) {
-                                checkedItems[which] = isChecked;
-                            }
-                        })
-
-                // Добавляем кнопки
-                .setPositiveButton("Готово",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int id) {
-                                try {
-                                    database = dbHelper.getWritableDatabase();
-                                    Log.d(MonthActivity.TAG, "получена копия базы данных getWritableDatabase()");
-                                }
-                                catch (SQLiteException ex){
-                                    database = dbHelper.getReadableDatabase();
-                                    Log.d(MonthActivity.TAG, "получена копия базы данных getReadableDatabase()");
-                                } catch (Exception e) {
-                                    Log.d(MonthActivity.TAG, "Ошибка чтения базы данных");
-                                }
-                                dbHelper.checkBoxWriter(database, items, checkedItems);
-                            //    database.close();
-                                StringBuilder state = new StringBuilder();
-                                for (int i = 0; i < items.length; i++) {
-                                    state.append("" + items[i]);
-                                    if (checkedItems[i])
-                                        state.append(" выбран\n");
-                                    else
-                                        state.append(" не выбран\n");
-                                }
-                                Toast.makeText(getApplicationContext(),
-                                        state.toString(), Toast.LENGTH_LONG)
-                                        .show();
-                                cleanColor();
-                                highlightTodayButton();
-                                displayEvents();
-                            }
-                        })
-
-                .setNegativeButton("Отмена",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int id) {
-                                dialog.cancel();
-                            }
-                        });
-        return builder.create();
-
-        }*/
-    //endregion
-
     public void displayEvents() {
+        Log.d(MonthActivity.TAG, "начало displayEvents");
         cleanColor();
         try {
             database = dbHelper.getWritableDatabase();
@@ -979,11 +934,11 @@ public class MonthActivity extends AppCompatActivity {
             Log.d(TAG, "событий для отображения не найдено");
         }
         cursor.close();
-  //      database.close();
+        //      database.close();
         highlightTodayButton();
     }
 
-    void cleanColor() {
+    private void cleanColor() {
         for (Button j : w1) {
             j.setBackgroundResource(android.R.color.transparent);
         }
@@ -1004,15 +959,14 @@ public class MonthActivity extends AppCompatActivity {
         }
     }
 
-    void highlightTodayButton() {
+    private void highlightTodayButton() {
         if (rightNow.get(Calendar.MONTH) == displayMonth.get(Calendar.MONTH) &&
                 rightNow.get(Calendar.YEAR) == displayMonth.get(Calendar.YEAR)) {
             today = btnSearch(rightNow.get(Calendar.DAY_OF_MONTH));  //находим кнопку today
-       //выделяем сегодняшний день
+            //выделяем сегодняшний день
             today.setBackgroundResource(R.drawable.today_background);
             today.setText(Integer.toString(rightNow.get(Calendar.DAY_OF_MONTH)));
         }
-
 
     }
 

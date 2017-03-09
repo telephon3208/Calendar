@@ -72,6 +72,28 @@ public class EditDialogFragment extends DialogFragment {
         Log.d(MonthActivity.TAG, "stableId: " + adapter.hasStableIds());
         listView.setAdapter(adapter);
         //   listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        /*
+        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                adapterView.setBackgroundResource(R.color.colorPrimaryLight);
+
+                //если не список содержит элемент, то добавляем его
+                if (!iDArray.contains(l)) {
+                    view.setBackgroundResource(R.color.colorAccentLight);
+                    iDArray.add(l);
+                } else {
+                    view.setBackgroundResource(R.color.colorPrimaryLight);
+                    iDArray.remove(l);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });*/
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -79,16 +101,14 @@ public class EditDialogFragment extends DialogFragment {
                 //id совпадает с id курсора
                 parent.setBackgroundResource(R.color.colorPrimaryLight);
 
-                if (id == eventID) {
-                    view.setBackgroundResource(R.color.colorPrimaryLight);
-                    if (!iDArray.isEmpty()) {
-                        iDArray.remove(id);
-                    }
-                } else {
+                //если не список содержит элемент, то добавляем его
+                if (!iDArray.contains(id)) {
                     view.setBackgroundResource(R.color.colorAccentLight);
                     iDArray.add(id);
+                } else {
+                    view.setBackgroundResource(R.color.colorPrimaryLight);
+                    iDArray.remove(id);
                 }
-                eventID = id;
             }
         });
 
@@ -185,7 +205,7 @@ public class EditDialogFragment extends DialogFragment {
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = DeleteDialogFragment.newInstance(eventID, EditDialogFragment.iDArray);
+        DialogFragment newFragment = DeleteDialogFragment.newInstance(EditDialogFragment.iDArray);
         newFragment.show(ft, tag);
     }
 

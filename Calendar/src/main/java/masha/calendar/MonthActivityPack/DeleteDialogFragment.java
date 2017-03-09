@@ -26,16 +26,16 @@ import masha.calendar.R;
 
 public class DeleteDialogFragment extends DialogFragment {
 
-    static long ID = 0;
+  //  static long ID = 0;
     ListView listView;
     Cursor cursor;
     static ArrayList<Long> iDArray;
 
-    public static DeleteDialogFragment newInstance(long num, ArrayList<Long> arrayList) {
+    public static DeleteDialogFragment newInstance(ArrayList<Long> arrayList) {
         DeleteDialogFragment f = new DeleteDialogFragment();
         Log.d(MonthActivity.TAG,"DeleteDialogFragment конструктор");
         iDArray = arrayList;
-        ID = num;
+
 
 /*        // Supply num input as an argument.
         Bundle args = new Bundle();
@@ -60,13 +60,13 @@ public class DeleteDialogFragment extends DialogFragment {
         listView.setAdapter(adapter);
         //   listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //id совпадает с id курсора
                 ID = id;
             }
-        });
+        });*/
         MonthActivity.setUpdateVariable("");
         return v;
     }
@@ -86,7 +86,13 @@ public class DeleteDialogFragment extends DialogFragment {
 
         String whereClause = "";
         for (Long item : iDArray) {
-            whereClause += "_id = " + item;
+            //если это не последний элемент
+            if (!iDArray.get(iDArray.size() - 1).equals(item)) {
+                whereClause += "_id = " + item + " OR ";
+            } else {
+                whereClause += "_id = " + item;
+            }
+
         }
         Log.d(MonthActivity.TAG,"whereClause = " + whereClause);
         Cursor cur = database.query(        //критерии выборки из БД
@@ -106,8 +112,7 @@ public class DeleteDialogFragment extends DialogFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btnYes:
-                    Log.d(MonthActivity.TAG,"Удалить событие с id : " + ID);
-                    MonthActivity.dbHelper.deleteEvent(ID);
+                    MonthActivity.dbHelper.deleteEvent(iDArray);
                     MonthActivity.setUpdateVariable("Обновить календарь");
                     break;
                 case R.id.btnCancel:

@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.util.ArrayList;
+
 import masha.calendar.MonthActivityPack.MonthActivity;
 
 /**
@@ -206,10 +209,13 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteEvent(long eventID) {
+    public void deleteEvent(ArrayList<Long> IDs) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(DBHelper.TABLE_EVENTS, "_id = " + eventID, null);
-        db.delete(DBHelper.TABLE_MONTH_EVENTS, "original_id = " + eventID, null);
+        for (Long item : IDs) {
+            db.delete(DBHelper.TABLE_EVENTS, "_id = " + item, null);
+            db.delete(DBHelper.TABLE_MONTH_EVENTS, "original_id = " + item, null);
+        }
+
     }
 
 }
