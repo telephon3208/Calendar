@@ -22,11 +22,12 @@
         android:orderInCategory="1"
         app:showAsAction="always"
         android:icon="@drawable/ic_border_color_white_24dp"/>
-    <item android:id="@+id/filter"
-        android:title="@string/filter"
+    <item
+        android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orderInCategory="1"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:icon="@drawable/ic_filter_outline_white_24dp"/>
 
 </menu>

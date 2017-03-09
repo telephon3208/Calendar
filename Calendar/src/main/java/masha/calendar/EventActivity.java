@@ -192,7 +192,9 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 } else {
                     editEvent();
                 }
+                MonthActivity.setUpdateVariable("Обновить календарь");
                 DayActivity.setUpdateVariable("Обновить список");
+                createEvent = false;
                 onBackPressed();
                 break;
             case R.id.cancel:
@@ -224,10 +226,11 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
         contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-        if (recurType < 3) {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
-        } else {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+        switch (recurType) {
+            case 4:
+                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+                break;
+            default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
         }
         
         if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
@@ -244,7 +247,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
         database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
-        MonthActivity.setUpdateVariable("Обновить календарь");
     }
 
     void editEvent() {
@@ -254,15 +256,14 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
         contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
         contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
-        contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
-        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
-        contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
+
         contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
 
-        if (recurType < 3) {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, 0);
-        } else {
-            contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+        switch (recurType) {
+            case 4:
+                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+                break;
+            default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
         }
 
         if (allDay.isChecked()) {
@@ -313,13 +314,33 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
 
         //находим originalID
         int originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
-        Log.d(MonthActivity.TAG,"находим оригинальный ID");
+
+        Cursor cursorTE = database.query(DBHelper.TABLE_EVENTS,
+                null,
+                "_id = ?", //условие для выборки
+                new String [] {String.format("%s", originalID)},
+                null,
+                null,
+                null);
+        cursorTE.moveToFirst();
+
+
+        if (day == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_DATE))
+                || month == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_MONTH))
+                || year == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_YEAR))) {
+            //если открыто первое событие, то изменения сохраняем
+            contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
+            contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
+            contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
+        } else {
+            //если открыто последующее событие, то изменения не сохраняем
+            //тут надо придумать что делать
+        }
+
         database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
                 new String[] {String.format("%s", originalID)});
-        Log.d(MonthActivity.TAG,"обавляем данные в таблице");
         //отправляем в MonthActivity весточку что надо профильтровать заново
-        MonthActivity.setUpdateVariable("Обновить календарь");
-        Log.d(MonthActivity.TAG,"setUpdateVariable()");
+
     }
 
     //region Listener для spinner
@@ -329,13 +350,8 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     recurType = position;
+                    recurDays = 0;
                     switch (position) {
-                        case 1: //повторять каждый год
-                            recurLayout.setVisibility(View.GONE);
-                            break;
-                        case 2: //повторять каждый месяц
-                            recurLayout.setVisibility(View.GONE);
-                            break;
                         case 3: //повторять каждую неделю
                             recurLayout.setVisibility(View.GONE);
                             recurDays = 7;
@@ -345,8 +361,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                             break;
                         default: //не повторять
                             recurLayout.setVisibility(View.GONE);
-                            recurDays = 0;
-                            recurType = 0;
                     }
                 }
 
