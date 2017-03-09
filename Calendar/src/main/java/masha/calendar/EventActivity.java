@@ -282,7 +282,6 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
         }
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
-        Log.d(MonthActivity.TAG,"получили cursor");
 
         try {
             database = dbHelper.getWritableDatabase();
@@ -292,28 +291,40 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
         } catch (Exception e) {
             Log.d(MonthActivity.TAG,"Ошибка чтения БД");
         }
+        Log.d(MonthActivity.TAG,"получили базу данных");
+        //если строка из TableMonthEvents не равна 0
+        long id = intent.getLongExtra("Строка из MonthEvents", 0);
+        long originalID = intent.getLongExtra("Строка из Events", 0);
 
-        //строка из TableMonthEvents
-        Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
-                null,
-                "_id = ?", //условие для выборки
-                new String [] {String.format("%s",
-                        intent.getLongExtra("Строка из MonthEvents", 0))},
-                null,
-                null,
-                null);
-        cursorTME.moveToFirst();
+        if (id != 0) {
+            Log.d(MonthActivity.TAG, "id = " + id);
+            Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
+                    null,
+                    "_id = ?", //условие для выборки
+                    new String [] {String.format("%s", id)},
+                    null,
+                    null,
+                    null);
 
-        int checked = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_CHECKED));
+            //если курсор не пустой
+            if (cursorTME.moveToFirst()) {
+                Log.d(MonthActivity.TAG,"получили cursor");
+            } else {
+                Log.d(MonthActivity.TAG,"cursor пуст");
+            }
 
-        if (checked == 1) {
-            contentValues.put(DBHelper.KEY_CHECKED, 1);
-        } else {
-            contentValues.put(DBHelper.KEY_CHECKED, 0);
+            int checked = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_CHECKED));
+
+            if (checked == 1) {
+                contentValues.put(DBHelper.KEY_CHECKED, 1);
+            } else {
+                contentValues.put(DBHelper.KEY_CHECKED, 0);
+            }
+
+            //находим originalID
+            originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
+            cursorTME.close();
         }
-
-        //находим originalID
-        int originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
 
         Cursor cursorTE = database.query(DBHelper.TABLE_EVENTS,
                 null,
@@ -323,7 +334,7 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
                 null,
                 null);
         cursorTE.moveToFirst();
-
+        Log.d(MonthActivity.TAG,"получили другой cursor");
 
         if (day == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_DATE))
                 || month == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_MONTH))
@@ -336,10 +347,10 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             //если открыто последующее событие, то изменения не сохраняем
             //тут надо придумать что делать
         }
+        cursorTE.close();
 
         database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
                 new String[] {String.format("%s", originalID)});
-        //отправляем в MonthActivity весточку что надо профильтровать заново
 
     }
 

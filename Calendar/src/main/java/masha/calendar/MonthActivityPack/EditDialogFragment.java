@@ -71,29 +71,6 @@ public class EditDialogFragment extends DialogFragment {
                 cursor, 0);
         Log.d(MonthActivity.TAG, "stableId: " + adapter.hasStableIds());
         listView.setAdapter(adapter);
-        //   listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        /*
-        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                adapterView.setBackgroundResource(R.color.colorPrimaryLight);
-
-                //если не список содержит элемент, то добавляем его
-                if (!iDArray.contains(l)) {
-                    view.setBackgroundResource(R.color.colorAccentLight);
-                    iDArray.add(l);
-                } else {
-                    view.setBackgroundResource(R.color.colorPrimaryLight);
-                    iDArray.remove(l);
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });*/
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -156,7 +133,8 @@ public class EditDialogFragment extends DialogFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btnEdit:
-                    openEventActivity(eventID);
+                    Log.d(MonthActivity.TAG, "последний элемент iDArray = " + iDArray.get(iDArray.size() - 1));
+                    openEventActivity(iDArray.get(iDArray.size() - 1));
                     MonthActivity.setUpdateVariable("Обновить календарь");
                     dismiss();
                     break;
@@ -174,7 +152,7 @@ public class EditDialogFragment extends DialogFragment {
     }};
 
     void openEventActivity(long id) {
-
+        Log.d(MonthActivity.TAG, "id = " + id);
         if (id != 0) {
             Toast.makeText(getActivity(), "Редактирование",
                     Toast.LENGTH_SHORT).show();

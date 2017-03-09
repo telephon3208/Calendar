@@ -45,7 +45,6 @@ public class DeleteDialogFragment extends DialogFragment {
         return f;
     }
 
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(MonthActivity.TAG,"DeleteDialogFragment метод onCreateView");

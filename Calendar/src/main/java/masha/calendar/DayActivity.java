@@ -98,7 +98,8 @@ public class DayActivity extends AppCompatActivity {
         final CursorAdapter adapter = new DayActivityListAdapter(this, getDayEvents(), 0);
         listEvents.setAdapter(adapter);
 
-        //слушатель для изменения переменной updateEvents
+
+        //слушатель для изменения переменной
         supportDayActivity = new PropertyChangeSupport(this);
         supportDayActivity.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
@@ -108,9 +109,7 @@ public class DayActivity extends AppCompatActivity {
                         MonthActivity.setUpdateVariable("Обновить календарь");
                         adapter.changeCursor(getDayEvents());
                         break;
-                    case "" :
 
-                        break;
                 }
             }
         });
