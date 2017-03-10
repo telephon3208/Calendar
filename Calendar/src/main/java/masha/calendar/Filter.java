@@ -46,51 +46,20 @@ public class Filter {
    //     String date = String.format("%s", c.get(Calendar.DAY_OF_MONTH));
         String month = String.format("%s", c.get(Calendar.MONTH));
         String year = String.format("%s", c.get(Calendar.YEAR));
+        //единоразовые события
+        String whereClause1 = "recur_type = 0 AND month = " + month + " AND year = " + year;
+        //события раз в год
+        String whereClause2 = "recur_type = 1 AND month = " + month + " AND year <= " + year;
+        //события раз в месяц
+        String whereClause3 = "recur_type = 2 AND month <= " + month + " AND year <= " + year;
+        //события раз в несколько дней
+        String whereClause4 = "(recur_type = 3 OR recur_type = 4) AND " +
+                "((year = " + year + " AND month <= " + month + ") OR year < " + year + ")";
 
-        //фильтруем одноразовые события
-        Cursor cursor = database.query(
-                DBHelper.TABLE_EVENTS,
-                null,
-                "recur_type = ? AND year = ? AND month = ?", //условие для выборки
-                new String [] {"0", year, month},
-                null,
-                null,
-                null);
-        processEntries(cursor, c);
+        String whereClauseAll = "(" + whereClause1 + ") OR (" + whereClause2 + ") OR ("
+                + whereClause3 + ") OR (" + whereClause4 + ")";
 
-        //фильтруем ежегодные события
-        cursor = database.query(        //критерии выборки из БД
-                DBHelper.TABLE_EVENTS,
-                null,
-                "recur_type = ? AND month = ? AND year <= ?", //условие для выборки
-                new String [] {"1", month, year},
-                null,
-                null,
-                null);
-        processEntries(cursor, c);
-
-        //фильтруем ежемесячные события
-        cursor = database.query(        //критерии выборки из БД
-                DBHelper.TABLE_EVENTS,
-                null,
-                "recur_type = ? AND year <= ? AND month <= ?", //условие для выборки
-                new String [] {"2", year, month},
-                null,
-                null,
-                null);
-        processEntries(cursor, c);
-
-        //фильтруем события раз в несколько дней
-        String where = "(recur_type = 3 OR recur_type = 4) AND ((year = ? AND month <= ?) OR year < ?)";
-
-        cursor = database.query(        //критерии выборки из БД
-                DBHelper.TABLE_EVENTS,
-                null,
-                where,
-                new String [] {year, month, year},
-                null,
-                null,
-                null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + DBHelper.TABLE_EVENTS + " WHERE " + whereClauseAll, null);
 
         processEntries(cursor, c);
 
@@ -99,65 +68,70 @@ public class Filter {
    //     database.close();
     }
 
-    void processEntries(Cursor cursor, Calendar c) {
-
+    private void processEntries(Cursor cursor, Calendar c) {
+        int recurType = 0;
         if (cursor.moveToFirst()) {     //проверка содержит ли cursor хоть одну запись
-            int recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
-            if (recurType < 3) {
-                do {       //в случае когда recurType < 3
+            do {
+                recurType = cursor.getInt(cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE));
+                if (recurType < 3) {
+                   //в случае когда recurType < 3
                     addEntry(cursor, c); //запись одной строчки курсора
-                } while (cursor.moveToNext()) ;
-            } else {
-                //в случае когда recurType = 3 или 4
-                do {
+                } else {
+                    //в случае когда recurType = 3 или 4
                     computeRecurDays(cursor, c);
-                } while (cursor.moveToNext()) ;
+                }
+            } while (cursor.moveToNext()) ;
+        } else {
+            Log.d(MonthActivity.TAG, "Событий в БД не найдено");
+        }
+    }
+
+    private void addEntry(Cursor cursor, Calendar c) {  //запись в таблицу одной строчки курсора
+        database.beginTransaction();
+        try {
+            int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+            int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
+            int descriptionIndex = cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION);
+            int dateIndex = cursor.getColumnIndex(DBHelper.KEY_DATE);
+            int monthIndex = cursor.getColumnIndex(DBHelper.KEY_MONTH);
+            int yearIndex = cursor.getColumnIndex(DBHelper.KEY_YEAR);
+            int hourIndex = cursor.getColumnIndex(DBHelper.KEY_HOUR);
+            int minuteIndex = cursor.getColumnIndex(DBHelper.KEY_MINUTE);
+            int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
+            int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
+            int all_dayIndex = cursor.getColumnIndex(DBHelper.KEY_ALL_DAY);
+            int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
+            int checkedIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
+
+            contentValues = new ContentValues();
+
+            if (cursor.getInt(recurTypeIndex) < 3) {
+                contentValues.put("date", cursor.getInt(dateIndex));
+            } else {
+                contentValues.put("date", c.get(Calendar.DAY_OF_MONTH));
             }
-        } else {
-            Log.d(MonthActivity.TAG, "курсор не содержит записей");
+            contentValues.put("month", c.get(Calendar.MONTH));
+            contentValues.put("year", c.get(Calendar.YEAR));
+            contentValues.put("title", cursor.getString(titleIndex));
+            contentValues.put("description", cursor.getString(descriptionIndex));
+            contentValues.put("hour", cursor.getInt(hourIndex));
+            contentValues.put("minute", cursor.getInt(minuteIndex));
+            contentValues.put("recur_type", cursor.getInt(recurTypeIndex));
+            contentValues.put("recur_days", cursor.getInt(recurDaysIndex));
+            contentValues.put("all_day", cursor.getInt(all_dayIndex));
+            contentValues.put("tag", cursor.getString(tagIndex));
+            contentValues.put("checked", cursor.getInt(checkedIndex));
+            contentValues.put("original_id", cursor.getInt(idIndex));
+
+            database.insert(TABLE_MONTH_EVENTS, null, contentValues);
+
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
         }
     }
 
-    void addEntry(Cursor cursor, Calendar c) {  //запись в таблицу одной строчки курсора
-        int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
-        int titleIndex = cursor.getColumnIndex(DBHelper.KEY_TITLE);
-        int descriptionIndex = cursor.getColumnIndex(DBHelper.KEY_DESCRIPTION);
-        int dateIndex = cursor.getColumnIndex(DBHelper.KEY_DATE);
-        int monthIndex = cursor.getColumnIndex(DBHelper.KEY_MONTH);
-        int yearIndex = cursor.getColumnIndex(DBHelper.KEY_YEAR);
-        int hourIndex = cursor.getColumnIndex(DBHelper.KEY_HOUR);
-        int minuteIndex = cursor.getColumnIndex(DBHelper.KEY_MINUTE);
-        int recurTypeIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_TYPE);
-        int recurDaysIndex = cursor.getColumnIndex(DBHelper.KEY_RECUR_DAYS);
-        int all_dayIndex = cursor.getColumnIndex(DBHelper.KEY_ALL_DAY);
-        int tagIndex = cursor.getColumnIndex(DBHelper.KEY_TAG);
-        int checkedIndex = cursor.getColumnIndex(DBHelper.KEY_CHECKED);
-
-        contentValues = new ContentValues();
-
-        if (cursor.getInt(recurTypeIndex) < 3) {
-            contentValues.put("date", cursor.getInt(dateIndex));
-        } else {
-            contentValues.put("date", c.get(Calendar.DAY_OF_MONTH));
-        }
-        contentValues.put("month", c.get(Calendar.MONTH));
-        contentValues.put("year", c.get(Calendar.YEAR));
-        contentValues.put("title", cursor.getString(titleIndex));
-        contentValues.put("description", cursor.getString(descriptionIndex));
-        contentValues.put("hour", cursor.getInt(hourIndex));
-        contentValues.put("minute", cursor.getInt(minuteIndex));
-        contentValues.put("recur_type", cursor.getInt(recurTypeIndex));
-        contentValues.put("recur_days", cursor.getInt(recurDaysIndex));
-        contentValues.put("all_day", cursor.getInt(all_dayIndex));
-        contentValues.put("tag", cursor.getString(tagIndex));
-        contentValues.put("checked", cursor.getInt(checkedIndex));
-        contentValues.put("original_id", cursor.getInt(idIndex));
-
-        database.insert(TABLE_MONTH_EVENTS, null, contentValues);
-
-    }
-
-    void computeRecurDays(Cursor cursor, Calendar C) {
+    private void computeRecurDays(Cursor cursor, Calendar C) {
         //создаем клон календаря, чтобы производить с ним манипуляции
         Calendar c = (Calendar) C.clone();
         int currentMonth = c.get(Calendar.MONTH);

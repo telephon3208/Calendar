@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Calendar/Calendar.iml" filepath="$PROJECT_DIR$/Calendar/Calendar.iml" />
       <module fileurl="file://$PROJECT_DIR$/Calendar.iml" filepath="$PROJECT_DIR$/Calendar.iml" />
       <module fileurl="file://$PROJECT_DIR$/Calendar/Calendar-Calendar.iml" filepath="$PROJECT_DIR$/Calendar/Calendar-Calendar.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Calendar2.iml" filepath="$PROJECT_DIR$/Calendar2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lifeCicleTest/lifeCicleTest.iml" filepath="$PROJECT_DIR$/lifeCicleTest/lifeCicleTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/lifeCicleTest/lifeCicleTest.iml" filepath="$PROJECT_DIR$/lifeCicleTest/lifeCicleTest.iml" />
     </modules>
   </component>

@@ -216,73 +216,51 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             Log.d(MonthActivity.TAG,"Ошибка чтения БД");
         }
 
-        contentValues = new ContentValues();
+        database.beginTransaction();
 
-        contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
-        contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
-        contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
-        contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
-        contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
-        contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
-        contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
-        contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-        switch (recurType) {
-            case 4:
-                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
-                break;
-            default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
-        }
-        
-        if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
-        else contentValues.put(DBHelper.KEY_ALL_DAY, 0);
+        try {
+            contentValues = new ContentValues();
 
-        //проверяем записан ли тэг, если нет, то пишем "Без тэга"
-        if (autoCompleteTextView.getText().toString().isEmpty()) {
-            contentValues.put(DBHelper.KEY_TAG, "Без тэга");
-        } else {
-            contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
-        }
-        //по умолчанию ставим галку на checked
-        contentValues.put(DBHelper.KEY_CHECKED, 1);
+            contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
+            contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
+            contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
+            contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
+            contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
+            contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
+            contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
+            contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
+            switch (recurType) {
+                case 4:
+                    contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+                    break;
+                default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
+            }
+
+            if (allDay.isChecked()) contentValues.put(DBHelper.KEY_ALL_DAY, 1);
+            else contentValues.put(DBHelper.KEY_ALL_DAY, 0);
+
+            //проверяем записан ли тэг, если нет, то пишем "Без тэга"
+            if (autoCompleteTextView.getText().toString().isEmpty()) {
+                contentValues.put(DBHelper.KEY_TAG, "Без тэга");
+            } else {
+                contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+            }
+            //по умолчанию ставим галку на checked
+            contentValues.put(DBHelper.KEY_CHECKED, 1);
 //                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
 
-        database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
+            database.insert(DBHelper.TABLE_EVENTS, null, contentValues);
+
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
+
     }
 
     void editEvent() {
 
         Log.d(MonthActivity.TAG,"в методе EditEvent()");
-        contentValues = new ContentValues();
-
-        contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
-        contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
-
-        contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
-
-        switch (recurType) {
-            case 4:
-                contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
-                break;
-            default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
-        }
-
-        if (allDay.isChecked()) {
-            contentValues.put(DBHelper.KEY_ALL_DAY, 1);
-        }
-        else {
-            contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
-            contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
-            contentValues.put(DBHelper.KEY_ALL_DAY, 0);
-        }
-
-        //проверяем записан ли тэг, если нет, то пишем "Без тэга"
-        if (autoCompleteTextView.getText().toString().isEmpty()) {
-            contentValues.put(DBHelper.KEY_TAG, "Без тэга");
-        } else {
-            contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
-        }
-//                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
-
         try {
             database = dbHelper.getWritableDatabase();
         }
@@ -292,65 +270,107 @@ public class EventActivity extends AppCompatActivity implements View.OnClickList
             Log.d(MonthActivity.TAG,"Ошибка чтения БД");
         }
         Log.d(MonthActivity.TAG,"получили базу данных");
-        //если строка из TableMonthEvents не равна 0
-        long id = intent.getLongExtra("Строка из MonthEvents", 0);
-        long originalID = intent.getLongExtra("Строка из Events", 0);
 
-        if (id != 0) {
-            Log.d(MonthActivity.TAG, "id = " + id);
-            Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
+        database.beginTransaction();
+
+        try {
+            contentValues = new ContentValues();
+
+            contentValues.put(DBHelper.KEY_TITLE, eventName.getText().toString());
+            contentValues.put(DBHelper.KEY_DESCRIPTION, eventText.getText().toString());
+
+            contentValues.put(DBHelper.KEY_RECUR_TYPE, recurType);
+
+            switch (recurType) {
+                case 4:
+                    contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDayPicker.getValue());
+                    break;
+                default: contentValues.put(DBHelper.KEY_RECUR_DAYS, recurDays);
+            }
+
+            if (allDay.isChecked()) {
+                contentValues.put(DBHelper.KEY_ALL_DAY, 1);
+            }
+            else {
+                contentValues.put(DBHelper.KEY_HOUR, hourPicker.getValue());
+                contentValues.put(DBHelper.KEY_MINUTE, minutePicker.getValue());
+                contentValues.put(DBHelper.KEY_ALL_DAY, 0);
+            }
+
+            //проверяем записан ли тэг, если нет, то пишем "Без тэга"
+            if (autoCompleteTextView.getText().toString().isEmpty()) {
+                contentValues.put(DBHelper.KEY_TAG, "Без тэга");
+            } else {
+                contentValues.put(DBHelper.KEY_TAG, autoCompleteTextView.getText().toString());
+            }
+//                    contentValues.put(DBHelper.KEY_COLOR, eventText.getText().toString());
+
+
+            //если строка из TableMonthEvents не равна 0
+            long id = intent.getLongExtra("Строка из MonthEvents", 0);
+            long originalID = intent.getLongExtra("Строка из Events", 0);
+
+            if (id != 0) {
+                Log.d(MonthActivity.TAG, "id = " + id);
+                Cursor cursorTME = database.query(DBHelper.TABLE_MONTH_EVENTS,
+                        null,
+                        "_id = ?", //условие для выборки
+                        new String [] {String.format("%s", id)},
+                        null,
+                        null,
+                        null);
+
+                //если курсор не пустой
+                if (cursorTME.moveToFirst()) {
+                    Log.d(MonthActivity.TAG,"получили cursor");
+                } else {
+                    Log.d(MonthActivity.TAG,"cursor пуст");
+                }
+
+                int checked = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_CHECKED));
+
+                if (checked == 1) {
+                    contentValues.put(DBHelper.KEY_CHECKED, 1);
+                } else {
+                    contentValues.put(DBHelper.KEY_CHECKED, 0);
+                }
+
+                //находим originalID
+                originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
+                cursorTME.close();
+            }
+
+            Cursor cursorTE = database.query(DBHelper.TABLE_EVENTS,
                     null,
                     "_id = ?", //условие для выборки
-                    new String [] {String.format("%s", id)},
+                    new String [] {String.format("%s", originalID)},
                     null,
                     null,
                     null);
+            cursorTE.moveToFirst();
+            Log.d(MonthActivity.TAG,"получили другой cursor");
 
-            //если курсор не пустой
-            if (cursorTME.moveToFirst()) {
-                Log.d(MonthActivity.TAG,"получили cursor");
+            if (day == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_DATE))
+                    || month == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_MONTH))
+                    || year == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_YEAR))) {
+                //если открыто первое событие, то изменения сохраняем
+                contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
+                contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
+                contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
             } else {
-                Log.d(MonthActivity.TAG,"cursor пуст");
+                //если открыто последующее событие, то изменения не сохраняем
+                //тут надо придумать что делать
             }
+            cursorTE.close();
 
-            int checked = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_CHECKED));
+            database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
+                    new String[] {String.format("%s", originalID)});
 
-            if (checked == 1) {
-                contentValues.put(DBHelper.KEY_CHECKED, 1);
-            } else {
-                contentValues.put(DBHelper.KEY_CHECKED, 0);
-            }
+            database.setTransactionSuccessful();
 
-            //находим originalID
-            originalID = cursorTME.getInt(cursorTME.getColumnIndex(DBHelper.KEY_ORIGINAL_ID));
-            cursorTME.close();
+        } finally {
+            database.endTransaction();
         }
-
-        Cursor cursorTE = database.query(DBHelper.TABLE_EVENTS,
-                null,
-                "_id = ?", //условие для выборки
-                new String [] {String.format("%s", originalID)},
-                null,
-                null,
-                null);
-        cursorTE.moveToFirst();
-        Log.d(MonthActivity.TAG,"получили другой cursor");
-
-        if (day == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_DATE))
-                || month == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_MONTH))
-                || year == cursorTE.getInt(cursorTE.getColumnIndex(DBHelper.KEY_YEAR))) {
-            //если открыто первое событие, то изменения сохраняем
-            contentValues.put(DBHelper.KEY_DATE, dayPicker.getValue());
-            contentValues.put(DBHelper.KEY_MONTH, monthPicker.getValue());
-            contentValues.put(DBHelper.KEY_YEAR, yearPicker.getValue());
-        } else {
-            //если открыто последующее событие, то изменения не сохраняем
-            //тут надо придумать что делать
-        }
-        cursorTE.close();
-
-        database.update(DBHelper.TABLE_EVENTS, contentValues, "_id = ?",
-                new String[] {String.format("%s", originalID)});
 
     }
 
